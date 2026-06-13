@@ -7,45 +7,45 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg: #e9edf0;
-        --surface: #ffffff;
-        --surface-2: #f2f5f7;
-        --ink: #15212b;
-        --ink-soft: #5a6a77;
-        --line: #d3dbe1;
-        --line-strong: #b9c4cc;
-        --accent: #0f7b6c;
-        --accent-soft: #e2f0ed;
-        --amber: #b07c1f;
-        --amber-soft: #f6ecd6;
-        --danger: #b3402e;
-        --you: #1f5fb0;
-        --you-soft: #e4eefa;
+        --bg: #e7ddc4;
+        --surface: #f7f1e1;
+        --surface-2: #efe7d1;
+        --ink: #2d2819;
+        --ink-soft: #6f6850;
+        --line: #d9cdaf;
+        --line-strong: #c6b893;
+        --accent: #5f6a2c;
+        --accent-soft: #e4e7c9;
+        --amber: #a8822c;
+        --amber-soft: #efe3c0;
+        --danger: #a23a26;
+        --you: #5f6a2c;
+        --you-soft: #e4e7c9;
         --shadow:
-          0 1px 2px rgba(21, 33, 43, 0.06), 0 6px 20px rgba(21, 33, 43, 0.06);
+          0 1px 2px rgba(45, 40, 25, 0.06), 0 6px 20px rgba(45, 40, 25, 0.07);
         --radius: 10px;
       }
       [data-theme='dark'] {
-        --bg: #10171d;
-        --surface: #18222b;
-        --surface-2: #1e2a34;
-        --ink: #e4eaee;
-        --ink-soft: #dde2e5;
-        --line: #2b3842;
-        --line-strong: #3a4a56;
-        --accent: #2ebfa5;
-        --accent-soft: #15302c;
-        --amber: #d9a441;
-        --amber-soft: #2c2615;
-        --danger: #e07a68;
-        --you: #6aa6ee;
-        --you-soft: #16243a;
-        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.3);
+        --bg: #0d0d0c;
+        --surface: #181815;
+        --surface-2: #20201c;
+        --ink: #ece3cd;
+        --ink-soft: #9c9580;
+        --line: #2a2a25;
+        --line-strong: #3b3b33;
+        --accent: #9fb257;
+        --accent-soft: #1d2114;
+        --amber: #d3a951;
+        --amber-soft: #29230f;
+        --danger: #e0836a;
+        --you: #9fb257;
+        --you-soft: #1d2114;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
       }
 
       * {
@@ -57,7 +57,7 @@
       body {
         background: var(--bg);
         color: var(--ink);
-        font-family: 'Space Grotesk', system-ui, sans-serif;
+        font-family: 'Poppins', system-ui, sans-serif;
         line-height: 1.5;
         min-height: 100vh;
         transition:
@@ -65,7 +65,30 @@
           color 0.25s;
       }
       .mono {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      /* themed scrollbars */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--line-strong) transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 11px;
+        height: 11px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--line-strong);
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+      }
+      ::-webkit-scrollbar-corner {
+        background: transparent;
       }
 
       .wrap {
@@ -83,13 +106,16 @@
         margin-bottom: 6px;
       }
       h1 {
-        font-size: clamp(1.4rem, 4vw, 1.9rem);
-        font-weight: 700;
-        letter-spacing: -0.02em;
+        font-family: 'Lora', serif;
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 600;
+        letter-spacing: 0;
       }
       .tagline {
+        font-family: 'Lora', serif;
+        font-style: italic;
         color: var(--ink-soft);
-        font-size: 0.85rem;
+        font-size: 0.95rem;
         margin-bottom: 24px;
       }
       #themeToggle {
@@ -98,8 +124,8 @@
         border-radius: 999px;
         padding: 6px 14px;
         font:
-          500 0.78rem 'IBM Plex Mono',
-          monospace;
+          500 0.78rem 'Poppins',
+          sans-serif;
         color: var(--ink);
         cursor: pointer;
       }
@@ -134,9 +160,9 @@
       }
       #codenameDisplay {
         font:
-          600 clamp(1.1rem, 4.5vw, 1.5rem) 'IBM Plex Mono',
-          monospace;
-        letter-spacing: 0.04em;
+          600 clamp(1.2rem, 4.5vw, 1.6rem) 'Lora',
+          serif;
+        letter-spacing: 0.01em;
         color: var(--accent);
         min-height: 1.5em;
         word-break: break-word;
@@ -153,7 +179,7 @@
         border-radius: 8px;
         padding: 10px 16px;
         font:
-          500 0.88rem 'Space Grotesk',
+          500 0.88rem 'Poppins',
           sans-serif;
         cursor: pointer;
         transition:
@@ -203,8 +229,8 @@
         border-radius: 8px;
         padding: 10px 12px;
         font:
-          400 0.92rem 'IBM Plex Mono',
-          monospace;
+          400 0.92rem 'Poppins',
+          sans-serif;
         color: var(--ink);
       }
       input:focus,
@@ -253,9 +279,41 @@
         border-radius: 999px;
         padding: 6px 14px;
         font:
-          600 0.85rem 'IBM Plex Mono',
-          monospace;
+          600 0.85rem 'Poppins',
+          sans-serif;
         margin-bottom: 4px;
+      }
+      .prog {
+        margin: 12px 0 2px;
+      }
+      .prog-track {
+        height: 9px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+      .prog-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 7px;
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+      }
+      #progText {
+        font-weight: 500;
+        color: var(--ink);
+      }
+      #progNote {
+        font-style: italic;
       }
 
       .banner {
@@ -281,14 +339,47 @@
         margin: 26px 0 12px;
       }
       .board-head h2 {
-        font: 500 0.8rem 'Space Grotesk';
+        font: 500 0.8rem 'Poppins';
         text-transform: uppercase;
         letter-spacing: 0.12em;
         color: var(--ink-soft);
       }
-      #refreshNote {
-        font-size: 0.74rem;
+
+      /* gate screen (pre sign-in) */
+      .gate {
+        margin-top: 10px;
+      }
+      .gate-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 44px 28px;
+        text-align: center;
+      }
+      .gate-eyebrow {
+        font: 500 0.72rem 'Poppins', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+      .gate-count {
+        font: 600 clamp(2.6rem, 12vw, 4rem) 'Lora', serif;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .gate-line {
+        font: italic 500 1.05rem 'Lora', serif;
+        color: var(--ink);
+        margin-top: 8px;
+      }
+      .gate-sub {
+        font-size: 0.9rem;
         color: var(--ink-soft);
+        max-width: 32ch;
+        margin: 16px auto 0;
+        line-height: 1.55;
       }
 
       .grid-wrap {
@@ -335,8 +426,8 @@
       .corner-label {
         padding: 12px 14px;
         font:
-          500 0.72rem 'IBM Plex Mono',
-          monospace;
+          500 0.72rem 'Poppins',
+          sans-serif;
         text-transform: uppercase;
         letter-spacing: 0.1em;
         color: var(--ink-soft);
@@ -353,7 +444,7 @@
         cursor: pointer;
         padding: 12px 12px;
         font:
-          500 0.82rem 'Space Grotesk',
+          500 0.82rem 'Poppins',
           sans-serif;
         color: var(--ink);
         text-align: center;
@@ -370,8 +461,8 @@
       .task-th .info-dot,
       .hint .info-dot {
         font:
-          600 0.62rem 'IBM Plex Mono',
-          monospace;
+          600 0.62rem 'Poppins',
+          sans-serif;
         color: var(--ink-soft);
         border: 1px solid var(--line-strong);
         border-radius: 999px;
@@ -389,14 +480,24 @@
         left: 0;
         z-index: 2;
         text-align: left;
-        padding: 11px 14px;
+        padding: 9px 14px;
         font:
-          500 0.82rem 'IBM Plex Mono',
-          monospace;
+          500 0.82rem 'Poppins',
+          sans-serif;
         min-width: 150px;
         max-width: 220px;
+      }
+      .who-name {
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .steps-chip {
+        display: inline-block;
+        margin-top: 3px;
+        font: 500 0.66rem 'Poppins', sans-serif;
+        letter-spacing: 0.02em;
+        color: var(--ink-soft);
       }
       tbody tr:hover .who,
       tbody tr:hover td {
@@ -533,7 +634,7 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         padding: 10px 15px;
         font:
-          500 0.85rem 'Space Grotesk',
+          500 0.85rem 'Poppins',
           sans-serif;
         opacity: 0;
         transform: translateY(8px);
@@ -560,8 +661,8 @@
         background: var(--surface-2);
         border-top: 2px solid var(--line-strong);
         font:
-          500 0.74rem 'IBM Plex Mono',
-          monospace;
+          500 0.74rem 'Poppins',
+          sans-serif;
         color: var(--ink-soft);
         text-align: center;
         padding: 9px 6px;
@@ -579,7 +680,7 @@
         align-items: center;
         justify-content: center;
         padding: 20px;
-        background: rgba(15, 23, 30, 0.55);
+        background: rgba(34, 28, 14, 0.5);
         animation: modalFade 0.15s ease;
       }
       [data-theme='dark'] .modal {
@@ -594,32 +695,44 @@
         border-top: 3px solid var(--accent);
         border-radius: var(--radius);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
-        padding: 22px 24px;
-        max-width: 440px;
+        max-width: 460px;
         width: 100%;
+        max-height: 82vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
         position: relative;
         animation: modalRise 0.18s ease;
       }
+      .modal-head {
+        flex: 0 0 auto;
+        padding: 22px 24px 14px;
+        border-bottom: 1px solid var(--line);
+      }
       .modal-eyebrow {
         font:
-          500 0.68rem 'IBM Plex Mono',
-          monospace;
+          500 0.68rem 'Poppins',
+          sans-serif;
         text-transform: uppercase;
         letter-spacing: 0.14em;
         color: var(--accent);
         margin-bottom: 6px;
       }
       .modal .dt-label {
-        font: 700 1.2rem 'Space Grotesk';
-        letter-spacing: -0.01em;
-        margin-bottom: 10px;
+        font: 600 1.35rem 'Lora', serif;
+        letter-spacing: 0;
+        margin: 0;
         padding-right: 28px;
       }
       .modal .dt-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 16px 24px 22px;
         font-size: 0.92rem;
         color: var(--ink-soft);
         white-space: pre-wrap;
-        line-height: 1.55;
+        line-height: 1.6;
       }
       .modal .dt-body a {
         color: var(--accent);
@@ -640,8 +753,8 @@
         cursor: pointer;
         color: var(--ink-soft);
         font:
-          500 0.85rem 'IBM Plex Mono',
-          monospace;
+          500 0.85rem 'Poppins',
+          sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -719,8 +832,7 @@
         <button id="themeToggle" aria-label="Toggle dark mode">◐ theme</button>
       </header>
       <p class="tagline" id="tagline">
-        Anonymous progress board. Codenames only — tick a box when you've done a
-        task.
+        “As iron sharpens iron, so one person sharpens another.” — Proverbs 27:17
       </p>
 
       <div id="setupBanner" class="banner">
@@ -731,7 +843,7 @@
 
       <!-- ===== identity ===== -->
       <section class="panel" id="identityPanel">
-        <h2>Your codename</h2>
+        <h2>Claim your codename</h2>
 
         <div
           id="restoringView"
@@ -741,25 +853,25 @@
           <span
             style="
               font:
-                600 0.95rem 'IBM Plex Mono',
-                monospace;
+                500 0.95rem 'Poppins',
+                sans-serif;
               color: var(--ink);
             "
-            >Signing you in…</span
+            >Gathering you in…</span
           >
         </div>
 
         <div id="claimView">
           <div class="dice-row">
-            <div id="codenameDisplay" class="empty">roll the dice →</div>
-            <button class="btn" id="rollBtn" type="button">🎲 Roll</button>
+            <div id="codenameDisplay" class="empty">cast for a codename →</div>
+            <button class="btn" id="rollBtn" type="button">🎲 Cast</button>
           </div>
           <div class="field-row">
             <div class="field">
               <label for="nameClaim"
                 >Your name
                 <span style="color: var(--ink-soft); font-weight: 400"
-                  >(optional — only the admin sees this, never the board)</span
+                  >(only the keeper sees this — never the board)</span
                 ></label
               >
               <input
@@ -788,14 +900,14 @@
             </button>
           </div>
           <p class="hint">
-            Codenames are random & unique.
+            Your codename is drawn at random.
             <strong
-              >Note yours down with the PIN; this page doesn't store
-              them.</strong
+              >Write it down with your PIN — they're your only way back in, and
+              this page won't remember them for you.</strong
             >
           </p>
           <button class="linklike" id="showLogin" type="button">
-            Already claimed one? Sign back in
+            Already have a codename? Sign back in
           </button>
           <div id="loginView" style="display: none; margin-top: 14px">
             <div class="field-row">
@@ -805,7 +917,7 @@
                   type="text"
                   id="codenameLogin"
                   autocomplete="off"
-                  placeholder="polite walrus"
+                  placeholder="humble dove"
                 />
               </div>
               <div class="field">
@@ -829,9 +941,18 @@
 
         <div id="sessionView" style="display: none">
           <div class="session-badge"><span id="sessionName"></span></div>
+          <div class="prog">
+            <div class="prog-track">
+              <div class="prog-fill" id="progFill"></div>
+            </div>
+            <div class="prog-meta">
+              <span id="progText">0 of 0 steps</span>
+              <span id="progNote"></span>
+            </div>
+          </div>
           <p class="hint" style="margin-top: 8px">
-            You're signed in. Your row is highlighted on the board below — tap
-            the cells in <strong>your</strong> row to tick tasks done.
+            You're in. Your row sits at the top of the board — tap the steps in
+            <strong>your</strong> row as you complete them.
           </p>
           <button
             class="linklike"
@@ -844,11 +965,23 @@
         </div>
       </section>
 
+      <!-- ===== gate (shown until signed in) ===== -->
+      <section id="gateScreen" class="gate" style="display: none">
+        <div class="gate-card">
+          <p class="gate-eyebrow">Begin</p>
+          <div class="gate-count" id="gateCount">—</div>
+          <p class="gate-line" id="gateLine">Gathering the company…</p>
+          <p class="gate-sub">
+            Cast a codename above and set a PIN to join them. The board opens
+            once you're in.
+          </p>
+        </div>
+      </section>
+
       <!-- ===== board ===== -->
-      <section>
+      <section id="boardSection" style="display: none">
         <div class="board-head">
           <h2>Board</h2>
-          <span id="refreshNote"></span>
         </div>
         <p class="hint">
           Click on the <span class="info-dot">i</span> icon to get the
@@ -876,8 +1009,10 @@
             >
               ✕
             </button>
-            <div class="modal-eyebrow">Task</div>
-            <div class="dt-label" id="dtLabel"></div>
+            <div class="modal-head">
+              <div class="modal-eyebrow">Task</div>
+              <div class="dt-label" id="dtLabel"></div>
+            </div>
             <div class="dt-body" id="dtBody"></div>
           </div>
         </div>
@@ -892,130 +1027,41 @@
    CONFIG — paste your Apps Script web app URL between the quotes.
    Example: "https://script.google.com/macros/s/AKfy.../exec"
    ================================================================ */
-      const SCRIPT_URL =
-        'https://script.google.com/macros/s/AKfycbylNKVDO56Vrew4TffammlA9GkxmoBq_7Ktx7U60PlLk6oAgwRbxrXw5Gt_bogTrVVZqQ/exec';
+      const SCRIPT_URL = 'https://script.google.com/macros/library/d/14_x6NW48zdS_qgH85qlPdxn8FSQCQUN443ytV8-IXkcrO92BwDx2QCpx/2';
 
-      /* The name shown on the admin row (your row, fed by the AdminDone column). */
-      const ADMIN_NAME = 'admin';
+      /* The name shown on the keeper row (fed by the AdminDone column). */
+      const ADMIN_NAME = 'keeper';
 
       /* ---------------- wordlists for the dice ---------------- */
       const ADJ = [
-        'amber',
-        'bold',
-        'brisk',
-        'calm',
-        'candid',
-        'civil',
-        'clever',
-        'cosmic',
-        'crisp',
-        'daft',
-        'dapper',
-        'deft',
-        'dusty',
-        'eager',
-        'feral',
-        'fluent',
-        'frank',
-        'gentle',
-        'glad',
-        'grim',
-        'hasty',
-        'hidden',
-        'humble',
-        'idle',
-        'jolly',
-        'keen',
-        'lucid',
-        'loyal',
-        'mellow',
-        'merry',
-        'mild',
-        'misty',
-        'modest',
-        'noble',
-        'odd',
-        'plucky',
-        'polite',
-        'proud',
-        'quiet',
-        'rapid',
-        'rogue',
-        'rustic',
-        'shrewd',
-        'silent',
-        'sly',
-        'solemn',
-        'spry',
-        'stoic',
-        'subtle',
-        'swift',
-        'tidy',
-        'vivid',
-        'wary',
-        'witty',
-        'zesty',
-        'zen',
+        'faithful', 'humble', 'gentle', 'patient', 'gracious', 'steadfast', 'righteous', 'blessed',
+        'redeemed', 'joyful', 'merciful', 'devoted', 'upright', 'contrite', 'anointed', 'beloved',
+        'chosen', 'kind', 'meek', 'pure', 'valiant', 'watchful', 'ardent', 'tender',
+        'hopeful', 'grateful', 'radiant', 'abiding', 'lowly', 'earnest', 'fervent', 'peaceful',
+        'holy', 'mended', 'ransomed', 'called', 'kindled', 'quiet', 'sincere', 'trusting',
+        'willing', 'prayerful', 'gathered', 'restored', 'loving', 'truthful', 'honest', 'worthy',
+        'noble', 'wise', 'brave', 'bold', 'zealous', 'cheerful', 'thankful', 'mighty',
+        'shining', 'golden', 'crowned', 'anchored', 'rooted', 'ready', 'awakened', 'renewed',
+        'forgiven', 'mindful', 'eternal', 'living', 'burning', 'rising', 'soaring', 'blooming',
+        'flowing', 'guarded', 'guided', 'sheltered', 'sealed', 'promised', 'graceful', 'tranquil',
+        'serene', 'cherished', 'honored', 'revered', 'sacred', 'hallowed', 'divine', 'heavenly',
+        'saintly', 'devout', 'reverent', 'obedient', 'yielded', 'enduring', 'abounding', 'overflowing',
+        'flourishing', 'fruitful', 'bountiful', 'generous', 'victorious', 'triumphant',
       ];
       const NOUN = [
-        'badger',
-        'bison',
-        'crane',
-        'civet',
-        'condor',
-        'cougar',
-        'dingo',
-        'drake',
-        'falcon',
-        'ferret',
-        'fox',
-        'gecko',
-        'gibbon',
-        'heron',
-        'hornet',
-        'ibex',
-        'ibis',
-        'jackal',
-        'kestrel',
-        'koala',
-        'lemur',
-        'linnet',
-        'lynx',
-        'macaw',
-        'magpie',
-        'marten',
-        'mole',
-        'mongoose',
-        'moth',
-        'newt',
-        'ocelot',
-        'orca',
-        'osprey',
-        'otter',
-        'owl',
-        'panther',
-        'pelican',
-        'pika',
-        'plover',
-        'puffin',
-        'quail',
-        'raven',
-        'saiga',
-        'shrike',
-        'skink',
-        'sloth',
-        'sparrow',
-        'stoat',
-        'swift',
-        'tapir',
-        'tern',
-        'toad',
-        'viper',
-        'walrus',
-        'wombat',
-        'wren',
-        'yak',
-        'zebu',
+        'lamb', 'dove', 'lion', 'shepherd', 'vine', 'olive', 'cedar', 'lily',
+        'sparrow', 'eagle', 'ram', 'stag', 'palm', 'reed', 'well', 'lamp',
+        'seed', 'harvest', 'manna', 'ark', 'altar', 'psalm', 'scroll', 'beacon',
+        'ember', 'vessel', 'branch', 'fig', 'wheat', 'fountain', 'anchor', 'banner',
+        'raven', 'dawn', 'pilgrim', 'sower', 'watchman', 'servant', 'fold', 'stream',
+        'mantle', 'candle', 'fisher', 'deer', 'rock', 'river', 'mountain', 'valley',
+        'garden', 'vineyard', 'orchard', 'meadow', 'pasture', 'spring', 'brook', 'oak',
+        'myrtle', 'cypress', 'almond', 'pomegranate', 'honey', 'bread', 'oil', 'wine',
+        'salt', 'light', 'flame', 'torch', 'star', 'sun', 'moon', 'cloud',
+        'rain', 'dew', 'wind', 'fire', 'stone', 'pearl', 'crown', 'robe',
+        'sandal', 'staff', 'rod', 'shield', 'sword', 'trumpet', 'harp', 'cymbal',
+        'incense', 'temple', 'gate', 'tower', 'wall', 'sanctuary', 'throne', 'refuge',
+        'haven', 'shelter', 'cornerstone', 'foundation',
       ];
 
       /* ---------------- state (memory only, by design) ---------------- */
@@ -1126,18 +1172,49 @@
           localStorage.removeItem(STORE_KEY);
         } catch (e) {}
       }
-      function restoreSession() {
-        if (session) return false;
-        const s = readStoredSession();
-        if (
-          s &&
-          s.codename &&
-          data.codenames.map(norm).includes(norm(s.codename))
-        ) {
-          startSession(s.codename, s.pin);
+      /* ---------------- gate vs board ---------------- */
+      function showSignedIn(on) {
+        $('gateScreen').style.display = on ? 'none' : 'block';
+        $('boardSection').style.display = on ? 'block' : 'none';
+      }
+      async function fetchBoard() {
+        try {
+          const res = await apiGet();
+          if (!res.ok) throw new Error(res.error || 'Bad response');
+          data = res;
+          renderBoard();
           return true;
+        } catch (err) {
+          $('gridWrap').innerHTML =
+            "<p class='empty-state'>Couldn't reach the board. Check your connection and refresh.</p>";
+          return false;
         }
-        return false;
+      }
+      async function fetchCount() {
+        try {
+          const res = await apiCount();
+          renderGate(res && res.ok ? res.count : null);
+        } catch (e) {
+          renderGate(null);
+        }
+      }
+      function renderGate(n) {
+        if (n === null || n === undefined) {
+          $('gateCount').style.display = 'none';
+          $('gateLine').textContent = 'Gathering the company…';
+          return;
+        }
+        if (n <= 0) {
+          $('gateCount').style.display = 'none';
+          $('gateLine').textContent = 'Be the first to set out.';
+        } else {
+          $('gateCount').style.display = '';
+          $('gateCount').textContent = n;
+          $('gateLine').textContent =
+            n === 1
+              ? 'companion has set out before you.'
+              : 'companions have set out before you.';
+        }
       }
 
       /* ---------------- API ---------------- */
@@ -1146,9 +1223,15 @@
         const res = await fetch(SCRIPT_URL);
         return res.json();
       }
+      async function apiCount() {
+        if (demoMode) return { ok: true, count: 3 };
+        const sep = SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?';
+        const res = await fetch(SCRIPT_URL + sep + 'count=1');
+        return res.json();
+      }
       async function apiPost(payload) {
-        if (demoMode)
-          return { ok: false, error: 'Demo mode — set SCRIPT_URL first.' };
+        // In demo mode, pretend writes succeed so the full flow is previewable.
+        if (demoMode) return { ok: true, codename: payload.codename };
         const res = await fetch(SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // no preflight
@@ -1162,7 +1245,7 @@
       function rollCodename() {
         const taken = new Set(data.codenames.map(norm));
         let name = '';
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 80; i++) {
           name =
             ADJ[Math.floor(Math.random() * ADJ.length)] +
             ' ' +
@@ -1203,14 +1286,21 @@
       /* ---------------- claim / login / session ---------------- */
       function refreshClaimBtn() {
         $('claimBtn').disabled = !(
-          candidate && /^\d{4,8}$/.test($('pinClaim').value)
+          candidate &&
+          $('nameClaim').value.trim() &&
+          /^\d{4,8}$/.test($('pinClaim').value)
         );
       }
       $('pinClaim').oninput = refreshClaimBtn;
+      $('nameClaim').oninput = refreshClaimBtn;
       $('rollBtn').onclick = rollCodename;
 
       $('claimBtn').onclick = async () => {
         setMsg($('claimMsg'), '', '');
+        if (!$('nameClaim').value.trim()) {
+          setMsg($('claimMsg'), 'Please add your name first.', 'err');
+          return;
+        }
         $('claimBtn').disabled = true;
         const res = await apiPost({
           action: 'register',
@@ -1220,7 +1310,7 @@
         });
         if (res.ok) {
           startSession(res.codename || candidate, $('pinClaim').value);
-          await load();
+          await fetchBoard();
         } else {
           setMsg($('claimMsg'), res.error || 'Something went wrong.', 'err');
           if (/claimed/i.test(res.error || '')) rollCodename();
@@ -1232,7 +1322,7 @@
         const v = $('loginView');
         v.style.display = v.style.display === 'none' ? 'block' : 'none';
       };
-      $('loginBtn').onclick = () => {
+      $('loginBtn').onclick = async () => {
         setMsg($('claimMsg'), '', '');
         const codename = norm($('codenameLogin').value);
         const pin = $('pinLogin').value;
@@ -1244,6 +1334,14 @@
           );
           return;
         }
+        $('loginBtn').disabled = true;
+        const res = await apiGet();
+        $('loginBtn').disabled = false;
+        if (!res || !res.ok) {
+          setMsg($('claimMsg'), "Couldn't reach the board. Try again.", 'err');
+          return;
+        }
+        data = res;
         if (!data.codenames.map(norm).includes(codename)) {
           setMsg($('claimMsg'), "That codename isn't on the books.", 'err');
           return;
@@ -1254,26 +1352,23 @@
       function startSession(codename, pin) {
         session = { codename, pin };
         saveSession(session);
-        $('appTitle').textContent = 'Hi, ' + codename;
-        $('tagline').textContent =
-          "You're on the board. Tick the cells in your row as you finish tasks.";
         $('sessionName').textContent = codename;
         $('restoringView').style.display = 'none';
         $('claimView').style.display = 'none';
         $('sessionView').style.display = 'block';
+        showSignedIn(true);
         renderBoard();
       }
       $('signOutBtn').onclick = () => {
         session = null;
         clearStoredSession();
-        $('appTitle').textContent = 'The Forge';
-        $('tagline').textContent =
-          "Anonymous progress board. Codenames only — tick a box when you've done a task.";
+        data = { tasks: [], codenames: [], board: [] }; // board data leaves memory
         $('sessionView').style.display = 'none';
         $('restoringView').style.display = 'none';
         $('claimView').style.display = 'block';
+        showSignedIn(false);
         setMsg($('gridMsg'), '', '');
-        renderBoard();
+        fetchCount();
       };
 
       /* ---------------- board state helpers ---------------- */
@@ -1361,7 +1456,7 @@
         const wrap = $('gridWrap');
         if (!data.tasks.length) {
           wrap.innerHTML =
-            "<p class='empty-state'>No tasks yet. The admin adds them in the sheet's Tasks tab.</p>";
+            "<p class='empty-state'>No steps yet. The keeper adds them in the sheet's Tasks tab.</p>";
           return;
         }
 
@@ -1389,6 +1484,13 @@
       </tr>
     </thead>`;
 
+        const k = data.tasks.length;
+        const chip = (n) => `<span class="steps-chip">${n} of ${k} steps</span>`;
+
+        const adminDoneN = data.tasks.reduce(
+          (s, t) => s + (t.adminDone ? 1 : 0),
+          0
+        );
         const adminCells = data.tasks
           .map(
             (t) =>
@@ -1397,13 +1499,17 @@
           .join('');
         const adminRow = `
     <tr class="admin-row">
-      <th class="who">${esc(ADMIN_NAME)}<span class="admin-tag">ADMIN</span></th>
+      <th class="who"><div class="who-name">${esc(ADMIN_NAME)}<span class="admin-tag">KEEPER</span></div>${chip(adminDoneN)}</th>
       ${adminCells}
     </tr>`;
 
         const bodyRows = rows
           .map((code) => {
             const you = youName && norm(code) === norm(youName);
+            const nDone = data.tasks.reduce(
+              (s, t) => s + (isDone(code, t.id) ? 1 : 0),
+              0
+            );
             const cells = data.tasks
               .map((t) => {
                 const done = isDone(code, t.id);
@@ -1421,27 +1527,16 @@
               })
               .join('');
             return `<tr class="${you ? 'you-row' : ''}">
-      <th class="who">${esc(code)}${you ? "<span class='you-tag'>YOU</span>" : ''}</th>${cells}</tr>`;
+      <th class="who"><div class="who-name">${esc(code)}${you ? "<span class='you-tag'>YOU</span>" : ''}</div>${chip(nDone)}</th>${cells}</tr>`;
           })
           .join('');
 
-        const totalPeople = rows.length + 1; // + admin
-        const footCells = data.tasks
-          .map((t) => {
-            const count =
-              (t.adminDone ? 1 : 0) +
-              rows.reduce((s, c) => s + (isDone(c, t.id) ? 1 : 0), 0);
-            return `<td>${count}/${totalPeople}</td>`;
-          })
-          .join('');
-        const foot = `<tfoot><tr><th class="who">done</th>${footCells}</tr></tfoot>`;
-
-        wrap.innerHTML = `<table class="grid">${head}<tbody>${adminRow}${bodyRows || ''}</tbody>${foot}</table>`;
+        wrap.innerHTML = `<table class="grid">${head}<tbody>${adminRow}${bodyRows || ''}</tbody></table>`;
         if (!rows.length) {
           // still show admin row; add a gentle nudge under the grid
           setMsg(
             $('gridMsg'),
-            "No one's joined yet — roll a codename to claim the first row.",
+            "No one's joined yet — cast a codename to take the first row.",
             'ok'
           );
         }
@@ -1455,32 +1550,57 @@
         wrap
           .querySelectorAll('.cell-btn')
           .forEach((b) => (b.onclick = () => toggleCell(b.dataset.task)));
+        updateProgress();
+      }
+
+      /* ---------------- signed-in progress bar ---------------- */
+      function updateProgress() {
+        if (!session) return;
+        const k = data.tasks.length;
+        const n = data.tasks.reduce(
+          (s, t) => s + (isDone(session.codename, t.id) ? 1 : 0),
+          0
+        );
+        const pct = k ? Math.round((n / k) * 100) : 0;
+        $('progFill').style.width = pct + '%';
+        $('progText').textContent = `${n} of ${k} steps`;
+        let note = '';
+        if (k === 0) note = '';
+        else if (n === 0) note = 'the first step awaits';
+        else if (n === k) note = 'every step complete — well done';
+        else note = `${k - n} to go`;
+        $('progNote').textContent = note;
       }
 
       /* ---------------- load ---------------- */
-      async function load() {
-        try {
-          const res = await apiGet();
-          if (!res.ok) throw new Error(res.error || 'Bad response');
-          data = res;
-          if (!restoreSession()) {
-            if (!session) {
-              // genuinely signed out
+      /* ---------------- startup ---------------- */
+      function init() {
+        const stored = readStoredSession();
+        if (stored && stored.codename && stored.pin) {
+          // Returning visitor: show "Gathering you in…" while we fetch the board.
+          $('claimView').style.display = 'none';
+          $('sessionView').style.display = 'none';
+          $('restoringView').style.display = 'flex';
+          $('gateScreen').style.display = 'none';
+          $('boardSection').style.display = 'none';
+          apiGet()
+            .then((res) => {
+              if (!res || !res.ok) throw new Error();
+              data = res;
+              startSession(stored.codename, stored.pin);
+            })
+            .catch(() => {
               $('restoringView').style.display = 'none';
               $('claimView').style.display = 'block';
-            }
-            renderBoard();
-          }
-          $('refreshNote').textContent =
-            'updated ' + new Date().toLocaleTimeString();
-        } catch (err) {
-          $('gridWrap').innerHTML =
-            "<p class='empty-state'>Couldn't reach the sheet. Check SCRIPT_URL and that the web app is deployed with access “Anyone”, then refresh.</p>";
-          if (!session) {
-            // drop the "signing in" state on failure
-            $('restoringView').style.display = 'none';
-            $('claimView').style.display = 'block';
-          }
+              showSignedIn(false);
+              fetchCount();
+            });
+        } else {
+          // New visitor: gate screen + join count only. The board stays unfetched.
+          if (demoMode) $('setupBanner').classList.add('show');
+          $('claimView').style.display = 'block';
+          showSignedIn(false);
+          fetchCount();
         }
       }
 
@@ -1517,28 +1637,28 @@
               adminDone: false,
             },
           ],
-          codenames: ['feral mongoose', 'polite walrus', 'silent kestrel'],
+          codenames: ['faithful lamb', 'humble dove', 'gentle shepherd'],
           board: [
             {
-              codename: 'feral mongoose',
+              codename: 'faithful lamb',
               taskId: 't1',
               done: true,
               updatedAt: new Date(Date.now() - 36e5).toISOString(),
             },
             {
-              codename: 'feral mongoose',
+              codename: 'faithful lamb',
               taskId: 't2',
               done: true,
               updatedAt: new Date(Date.now() - 36e5).toISOString(),
             },
             {
-              codename: 'polite walrus',
+              codename: 'humble dove',
               taskId: 't1',
               done: true,
               updatedAt: new Date(Date.now() - 864e5).toISOString(),
             },
             {
-              codename: 'silent kestrel',
+              codename: 'gentle shepherd',
               taskId: 't3',
               done: true,
               updatedAt: new Date(Date.now() - 72e5).toISOString(),
@@ -1547,13 +1667,7 @@
         };
       }
 
-      // If a saved session exists, show "Signing you in…" right away so the
-      // sign-up screen doesn't flash while the board's first fetch is in flight.
-      if (readStoredSession()) {
-        $('claimView').style.display = 'none';
-        $('restoringView').style.display = 'flex';
-      }
-      load();
+      init();
     </script>
   </body>
 </html>
