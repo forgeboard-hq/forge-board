@@ -1201,7 +1201,7 @@
       function renderGate(n) {
         if (n === null || n === undefined) {
           $('gateCount').style.display = 'none';
-          $('gateLine').textContent = 'Gathering the company…';
+          $('gateLine').textContent = 'Gathering the disciples…';
           return;
         }
         if (n <= 0) {
@@ -1212,8 +1212,8 @@
           $('gateCount').textContent = n;
           $('gateLine').textContent =
             n === 1
-              ? 'companion has set out before you.'
-              : 'companions have set out before you.';
+              ? 'disciple has set out before you.'
+              : 'disciples have set out before you.';
         }
       }
 
