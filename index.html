@@ -1,0 +1,1558 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Forge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #e9edf0;
+        --surface: #ffffff;
+        --surface-2: #f2f5f7;
+        --ink: #15212b;
+        --ink-soft: #5a6a77;
+        --line: #d3dbe1;
+        --line-strong: #b9c4cc;
+        --accent: #0f7b6c;
+        --accent-soft: #e2f0ed;
+        --amber: #b07c1f;
+        --amber-soft: #f6ecd6;
+        --danger: #b3402e;
+        --you: #1f5fb0;
+        --you-soft: #e4eefa;
+        --shadow:
+          0 1px 2px rgba(21, 33, 43, 0.06), 0 6px 20px rgba(21, 33, 43, 0.06);
+        --radius: 10px;
+      }
+      [data-theme='dark'] {
+        --bg: #10171d;
+        --surface: #18222b;
+        --surface-2: #1e2a34;
+        --ink: #e4eaee;
+        --ink-soft: #8da0ae;
+        --line: #2b3842;
+        --line-strong: #3a4a56;
+        --accent: #2ebfa5;
+        --accent-soft: #15302c;
+        --amber: #d9a441;
+        --amber-soft: #2c2615;
+        --danger: #e07a68;
+        --you: #6aa6ee;
+        --you-soft: #16243a;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+        line-height: 1.5;
+        min-height: 100vh;
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+      .mono {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px 80px;
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 1.9rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .tagline {
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+      }
+      #themeToggle {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font:
+          500 0.78rem 'IBM Plex Mono',
+          monospace;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      #themeToggle:hover {
+        border-color: var(--accent);
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .panel h2 {
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--ink-soft);
+        margin-bottom: 16px;
+      }
+
+      /* ---------- identity / dice ---------- */
+      .dice-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      #codenameDisplay {
+        font:
+          600 clamp(1.1rem, 4.5vw, 1.5rem) 'IBM Plex Mono',
+          monospace;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        min-height: 1.5em;
+        word-break: break-word;
+      }
+      #codenameDisplay.empty {
+        color: var(--ink-soft);
+        font-weight: 400;
+      }
+
+      .btn {
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 10px 16px;
+        font:
+          500 0.88rem 'Space Grotesk',
+          sans-serif;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .btn:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      [data-theme='dark'] .btn.primary {
+        color: #0c1512;
+      }
+      .btn.primary:hover:not(:disabled) {
+        filter: brightness(1.08);
+      }
+
+      .field-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+      .field {
+        flex: 1 1 140px;
+      }
+      .field label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+      }
+      input[type='text'],
+      input[type='password'] {
+        width: 100%;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font:
+          400 0.92rem 'IBM Plex Mono',
+          monospace;
+        color: var(--ink);
+      }
+      input:focus,
+      .btn:focus-visible,
+      #themeToggle:focus-visible,
+      .task-th button:focus-visible,
+      .cell-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .hint {
+        font-size: 0.85rem;
+        color: var(--ink);
+        margin-top: 10px;
+      }
+      .msg {
+        font-size: 0.85rem;
+        margin-top: 12px;
+        display: none;
+      }
+      .msg.err {
+        color: var(--danger);
+        display: block;
+      }
+      .msg.ok {
+        color: var(--accent);
+        display: block;
+      }
+      .linklike {
+        background: none;
+        border: none;
+        color: var(--accent);
+        font: inherit;
+        font-size: 0.8rem;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 0;
+        margin-top: 14px;
+      }
+      .session-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--you-soft);
+        color: var(--you);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font:
+          600 0.85rem 'IBM Plex Mono',
+          monospace;
+        margin-bottom: 4px;
+      }
+
+      .banner {
+        border: 1px solid var(--amber);
+        color: var(--amber);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        font-size: 0.84rem;
+        margin-bottom: 20px;
+        display: none;
+      }
+      .banner.show {
+        display: block;
+      }
+
+      /* ---------- board section ---------- */
+      .board-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 26px 0 12px;
+      }
+      .board-head h2 {
+        font: 500 0.8rem 'Space Grotesk';
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--ink-soft);
+      }
+      #refreshNote {
+        font-size: 0.74rem;
+        color: var(--ink-soft);
+      }
+
+      .grid-wrap {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: auto;
+        max-height: 70vh;
+        margin-top: 10px;
+      }
+      table.grid {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+      }
+
+      table.grid th,
+      table.grid td {
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        background: var(--surface);
+        white-space: nowrap;
+      }
+      table.grid tr > *:last-child {
+        border-right: none;
+      }
+
+      /* header row (task labels) */
+      thead .corner,
+      thead .task-th {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: var(--surface-2);
+        border-bottom: 2px solid var(--line-strong);
+      }
+      thead .corner {
+        left: 0;
+        z-index: 4;
+        text-align: left;
+        padding: 0;
+      }
+      .corner-label {
+        padding: 12px 14px;
+        font:
+          500 0.72rem 'IBM Plex Mono',
+          monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+      }
+      .task-th {
+        padding: 0;
+        min-width: 92px;
+      }
+      .task-th button {
+        width: 100%;
+        height: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 12px 12px;
+        font:
+          500 0.82rem 'Space Grotesk',
+          sans-serif;
+        color: var(--ink);
+        text-align: center;
+        line-height: 1.25;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .task-th button:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .task-th .info-dot,
+      .hint .info-dot {
+        font:
+          600 0.62rem 'IBM Plex Mono',
+          monospace;
+        color: var(--ink-soft);
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        width: 15px;
+        height: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* first column (codenames) */
+      tbody .who,
+      tfoot .who {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        text-align: left;
+        padding: 11px 14px;
+        font:
+          500 0.82rem 'IBM Plex Mono',
+          monospace;
+        min-width: 150px;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      tbody tr:hover .who,
+      tbody tr:hover td {
+        background: var(--surface-2);
+      }
+
+      .admin-row .who,
+      .admin-row td {
+        background: var(--amber-soft);
+      }
+      .admin-row:hover .who,
+      .admin-row:hover td {
+        background: var(--amber-soft);
+      }
+      .admin-tag,
+      .you-tag {
+        display: inline-block;
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+        border-radius: 4px;
+        padding: 0 5px;
+        margin-left: 6px;
+        vertical-align: middle;
+        border: 1px solid;
+      }
+      .admin-tag {
+        color: var(--amber);
+        border-color: var(--amber);
+      }
+      .you-tag {
+        color: var(--you);
+        border-color: var(--you);
+      }
+
+      .you-row .who,
+      .you-row td {
+        background: var(--you-soft);
+      }
+      .you-row:hover .who,
+      .you-row:hover td {
+        background: var(--you-soft);
+      }
+
+      /* cells */
+      table.grid td {
+        text-align: center;
+        padding: 0;
+        height: 44px;
+        min-width: 92px;
+        font-size: 1.05rem;
+      }
+      .check {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .blank {
+        color: var(--line-strong);
+      }
+      .cell-btn {
+        width: 100%;
+        height: 100%;
+        min-height: 44px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.15rem;
+        color: var(--you);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cell-btn .box {
+        color: var(--you);
+        opacity: 0.45;
+        font-size: 1.2rem;
+      }
+      .cell-btn:hover {
+        background: var(--you-soft);
+        filter: brightness(0.97);
+      }
+      .cell-btn.pending {
+        cursor: progress;
+      }
+      .cell-btn.pending:hover {
+        background: none;
+        filter: none;
+      }
+
+      /* spinner */
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        box-sizing: border-box;
+        border: 2px solid var(--line-strong);
+        border-top-color: var(--you);
+        animation: spin 0.6s linear infinite;
+        display: inline-block;
+      }
+      .spinner.sm {
+        width: 13px;
+        height: 13px;
+        border-top-color: var(--accent);
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* toasts */
+      #toastWrap {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        pointer-events: none;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 9px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        padding: 10px 15px;
+        font:
+          500 0.85rem 'Space Grotesk',
+          sans-serif;
+        opacity: 0;
+        transform: translateY(8px);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: auto;
+        max-width: 90vw;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: none;
+      }
+      .toast.err {
+        border-left-color: var(--danger);
+        color: var(--danger);
+      }
+
+      tfoot th,
+      tfoot td {
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
+        background: var(--surface-2);
+        border-top: 2px solid var(--line-strong);
+        font:
+          500 0.74rem 'IBM Plex Mono',
+          monospace;
+        color: var(--ink-soft);
+        text-align: center;
+        padding: 9px 6px;
+      }
+      tfoot .who {
+        z-index: 2;
+      }
+
+      /* description modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(15, 23, 30, 0.55);
+        animation: modalFade 0.15s ease;
+      }
+      [data-theme='dark'] .modal {
+        background: rgba(0, 0, 0, 0.62);
+      }
+      .modal[hidden] {
+        display: none;
+      }
+      .modal-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--accent);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+        padding: 22px 24px;
+        max-width: 440px;
+        width: 100%;
+        position: relative;
+        animation: modalRise 0.18s ease;
+      }
+      .modal-eyebrow {
+        font:
+          500 0.68rem 'IBM Plex Mono',
+          monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+      .modal .dt-label {
+        font: 700 1.2rem 'Space Grotesk';
+        letter-spacing: -0.01em;
+        margin-bottom: 10px;
+        padding-right: 28px;
+      }
+      .modal .dt-body {
+        font-size: 0.92rem;
+        color: var(--ink-soft);
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+      .modal .dt-body a {
+        color: var(--accent);
+        word-break: break-word;
+      }
+      .modal .dt-body a:hover {
+        text-decoration-thickness: 2px;
+      }
+      .modal-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        color: var(--ink-soft);
+        font:
+          500 0.85rem 'IBM Plex Mono',
+          monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-close:hover,
+      .modal-close:focus-visible {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes modalRise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .empty-state {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        padding: 24px;
+        text-align: center;
+      }
+      #gridMsg {
+        font-size: 0.82rem;
+        margin-top: 10px;
+        min-height: 1.2em;
+      }
+      #gridMsg.err {
+        color: var(--danger);
+      }
+      #gridMsg.ok {
+        color: var(--accent);
+      }
+
+      @media (max-width: 560px) {
+        .panel {
+          padding: 16px;
+        }
+        tbody .who,
+        tfoot .who {
+          min-width: 120px;
+          max-width: 140px;
+        }
+        .task-th {
+          min-width: 78px;
+        }
+        table.grid td {
+          min-width: 78px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1 id="appTitle">The Forge</h1>
+        <button id="themeToggle" aria-label="Toggle dark mode">◐ theme</button>
+      </header>
+      <p class="tagline" id="tagline">
+        Anonymous progress board. Codenames only — tick a box when you've done a
+        task.
+      </p>
+
+      <div id="setupBanner" class="banner">
+        Demo mode — <span class="mono">SCRIPT_URL</span> isn't set yet. Showing
+        sample data. Paste your Apps Script web app URL into the script to go
+        live.
+      </div>
+
+      <!-- ===== identity ===== -->
+      <section class="panel" id="identityPanel">
+        <h2>Your codename</h2>
+
+        <div
+          id="restoringView"
+          style="display: none; align-items: center; gap: 11px; padding: 4px 0"
+        >
+          <span class="spinner"></span>
+          <span
+            style="
+              font:
+                600 0.95rem 'IBM Plex Mono',
+                monospace;
+              color: var(--ink);
+            "
+            >Signing you in…</span
+          >
+        </div>
+
+        <div id="claimView">
+          <div class="dice-row">
+            <div id="codenameDisplay" class="empty">roll the dice →</div>
+            <button class="btn" id="rollBtn" type="button">🎲 Roll</button>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="nameClaim"
+                >Your name
+                <span style="color: var(--ink-soft); font-weight: 400"
+                  >(optional — only the admin sees this, never the board)</span
+                ></label
+              >
+              <input
+                type="text"
+                id="nameClaim"
+                autocomplete="off"
+                maxlength="80"
+                placeholder="e.g. Ash"
+              />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="pinClaim">Set a PIN (4–8 digits)</label>
+              <input
+                type="password"
+                id="pinClaim"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="8"
+                placeholder="••••"
+              />
+            </div>
+            <button class="btn primary" id="claimBtn" type="button" disabled>
+              Claim codename
+            </button>
+          </div>
+          <p class="hint">
+            Codenames are random & unique.
+            <strong
+              >Note yours down with the PIN; this page doesn't store
+              them.</strong
+            >
+          </p>
+          <button class="linklike" id="showLogin" type="button">
+            Already claimed one? Sign back in
+          </button>
+          <div id="loginView" style="display: none; margin-top: 14px">
+            <div class="field-row">
+              <div class="field">
+                <label for="codenameLogin">Codename</label>
+                <input
+                  type="text"
+                  id="codenameLogin"
+                  autocomplete="off"
+                  placeholder="polite walrus"
+                />
+              </div>
+              <div class="field">
+                <label for="pinLogin">PIN</label>
+                <input
+                  type="password"
+                  id="pinLogin"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  maxlength="8"
+                  placeholder="••••"
+                />
+              </div>
+              <button class="btn primary" id="loginBtn" type="button">
+                Sign in
+              </button>
+            </div>
+          </div>
+          <p class="msg" id="claimMsg"></p>
+        </div>
+
+        <div id="sessionView" style="display: none">
+          <div class="session-badge"><span id="sessionName"></span></div>
+          <p class="hint" style="margin-top: 8px">
+            You're signed in. Your row is highlighted on the board below — tap
+            the cells in <strong>your</strong> row to tick tasks done.
+          </p>
+          <button
+            class="linklike"
+            id="signOutBtn"
+            type="button"
+            style="color: var(--ink-soft)"
+          >
+            Sign out
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== board ===== -->
+      <section>
+        <div class="board-head">
+          <h2>Board</h2>
+          <span id="refreshNote"></span>
+        </div>
+        <p class="hint">
+          Click on the <span class="info-dot">i</span> icon to get the
+          description!
+        </p>
+
+        <div class="grid-wrap" id="gridWrap">
+          <p class="empty-state">Loading…</p>
+        </div>
+        <!-- task description modal -->
+        <div
+          id="modal"
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="dtLabel"
+          hidden
+        >
+          <div class="modal-card">
+            <button
+              class="modal-close"
+              id="dtClose"
+              type="button"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+            <div class="modal-eyebrow">Task</div>
+            <div class="dt-label" id="dtLabel"></div>
+            <div class="dt-body" id="dtBody"></div>
+          </div>
+        </div>
+        <p id="gridMsg"></p>
+      </section>
+    </div>
+
+    <div id="toastWrap" aria-live="polite"></div>
+
+    <script>
+      /* ================================================================
+   CONFIG — paste your Apps Script web app URL between the quotes.
+   Example: "https://script.google.com/macros/s/AKfy.../exec"
+   ================================================================ */
+      const SCRIPT_URL =
+        'https://script.google.com/macros/s/AKfycbylNKVDO56Vrew4TffammlA9GkxmoBq_7Ktx7U60PlLk6oAgwRbxrXw5Gt_bogTrVVZqQ/exec';
+
+      /* The name shown on the admin row (your row, fed by the AdminDone column). */
+      const ADMIN_NAME = 'admin';
+
+      /* ---------------- wordlists for the dice ---------------- */
+      const ADJ = [
+        'amber',
+        'bold',
+        'brisk',
+        'calm',
+        'candid',
+        'civil',
+        'clever',
+        'cosmic',
+        'crisp',
+        'daft',
+        'dapper',
+        'deft',
+        'dusty',
+        'eager',
+        'feral',
+        'fluent',
+        'frank',
+        'gentle',
+        'glad',
+        'grim',
+        'hasty',
+        'hidden',
+        'humble',
+        'idle',
+        'jolly',
+        'keen',
+        'lucid',
+        'loyal',
+        'mellow',
+        'merry',
+        'mild',
+        'misty',
+        'modest',
+        'noble',
+        'odd',
+        'plucky',
+        'polite',
+        'proud',
+        'quiet',
+        'rapid',
+        'rogue',
+        'rustic',
+        'shrewd',
+        'silent',
+        'sly',
+        'solemn',
+        'spry',
+        'stoic',
+        'subtle',
+        'swift',
+        'tidy',
+        'vivid',
+        'wary',
+        'witty',
+        'zesty',
+        'zen',
+      ];
+      const NOUN = [
+        'badger',
+        'bison',
+        'crane',
+        'civet',
+        'condor',
+        'cougar',
+        'dingo',
+        'drake',
+        'falcon',
+        'ferret',
+        'fox',
+        'gecko',
+        'gibbon',
+        'heron',
+        'hornet',
+        'ibex',
+        'ibis',
+        'jackal',
+        'kestrel',
+        'koala',
+        'lemur',
+        'linnet',
+        'lynx',
+        'macaw',
+        'magpie',
+        'marten',
+        'mole',
+        'mongoose',
+        'moth',
+        'newt',
+        'ocelot',
+        'orca',
+        'osprey',
+        'otter',
+        'owl',
+        'panther',
+        'pelican',
+        'pika',
+        'plover',
+        'puffin',
+        'quail',
+        'raven',
+        'saiga',
+        'shrike',
+        'skink',
+        'sloth',
+        'sparrow',
+        'stoat',
+        'swift',
+        'tapir',
+        'tern',
+        'toad',
+        'viper',
+        'walrus',
+        'wombat',
+        'wren',
+        'yak',
+        'zebu',
+      ];
+
+      /* ---------------- state (memory only, by design) ---------------- */
+      let session = null; // { codename, pin }
+      let data = { tasks: [], codenames: [], board: [] };
+      let candidate = '';
+      const pending = new Set(); // taskIds mid-save
+      const demoMode = !SCRIPT_URL;
+
+      /* ---------------- theme ---------------- */
+      const root = document.documentElement;
+      let theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      applyTheme();
+      document.getElementById('themeToggle').onclick = () => {
+        theme = theme === 'dark' ? 'light' : 'dark';
+        applyTheme();
+      };
+      function applyTheme() {
+        root.setAttribute('data-theme', theme);
+      }
+
+      /* ---------------- helpers ---------------- */
+      const $ = (id) => document.getElementById(id);
+      const norm = (s) =>
+        String(s || '')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, ' ');
+      function esc(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;',
+            })[c]
+        );
+      }
+      // Escape first, then turn http(s) URLs into safe links (new tab, no opener).
+      function linkify(text) {
+        return esc(text).replace(/https?:\/\/[^\s<]+/g, (url) => {
+          const trail = (url.match(/[.,;:!?)\]'"]+$/) || [''])[0];
+          const clean = trail ? url.slice(0, -trail.length) : url;
+          return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${trail}`;
+        });
+      }
+      function setMsg(el, text, kind) {
+        el.textContent = text;
+        el.className =
+          (el.id === 'gridMsg' ? '' : 'msg') + (text ? ' ' + kind : '');
+      }
+      function relTime(iso) {
+        if (!iso) return '';
+        const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+        if (m < 1) return 'just now';
+        if (m < 60) return m + 'm ago';
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + 'h ago';
+        return Math.floor(h / 24) + 'd ago';
+      }
+
+      /* ---------------- toasts ---------------- */
+      function showToast(msg, kind, opts) {
+        opts = opts || {};
+        const el = document.createElement('div');
+        el.className = 'toast' + (kind ? ' ' + kind : '');
+        el.innerHTML =
+          (opts.spinner ? "<span class='spinner sm'></span>" : '') +
+          "<span class='t-msg'></span>";
+        el.querySelector('.t-msg').textContent = msg;
+        $('toastWrap').appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        if (!opts.sticky)
+          setTimeout(() => dismissToast(el), opts.duration || 2200);
+        return el;
+      }
+      function dismissToast(el) {
+        if (!el || !el.parentNode) return;
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 220);
+      }
+
+      /* ---------------- session persistence (localStorage) ----------------
+   Stores codename + PIN on this device so the user stays signed in
+   across reloads. The PIN is kept in plaintext locally — fine for an
+   honor-system board, not a real secret. All access is wrapped so a
+   storage-blocked environment just falls back to no persistence.   */
+      const STORE_KEY = 'forge_session_v1';
+      function saveSession(s) {
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(s));
+        } catch (e) {}
+      }
+      function readStoredSession() {
+        try {
+          return JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+        } catch (e) {
+          return null;
+        }
+      }
+      function clearStoredSession() {
+        try {
+          localStorage.removeItem(STORE_KEY);
+        } catch (e) {}
+      }
+      function restoreSession() {
+        if (session) return false;
+        const s = readStoredSession();
+        if (
+          s &&
+          s.codename &&
+          data.codenames.map(norm).includes(norm(s.codename))
+        ) {
+          startSession(s.codename, s.pin);
+          return true;
+        }
+        return false;
+      }
+
+      /* ---------------- API ---------------- */
+      async function apiGet() {
+        if (demoMode) return demoData();
+        const res = await fetch(SCRIPT_URL);
+        return res.json();
+      }
+      async function apiPost(payload) {
+        if (demoMode)
+          return { ok: false, error: 'Demo mode — set SCRIPT_URL first.' };
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // no preflight
+          body: JSON.stringify(payload),
+        });
+        return res.json();
+      }
+
+      /* ---------------- dice ---------------- */
+      const GLYPHS = 'abcdefghijklmnopqrstuvwxyz';
+      function rollCodename() {
+        const taken = new Set(data.codenames.map(norm));
+        let name = '';
+        for (let i = 0; i < 50; i++) {
+          name =
+            ADJ[Math.floor(Math.random() * ADJ.length)] +
+            ' ' +
+            NOUN[Math.floor(Math.random() * NOUN.length)];
+          if (!taken.has(norm(name))) break;
+        }
+        candidate = name;
+        shuffleInto($('codenameDisplay'), name);
+        $('codenameDisplay').classList.remove('empty');
+        refreshClaimBtn();
+      }
+      function shuffleInto(el, finalText) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          el.textContent = finalText;
+          return;
+        }
+        let frame = 0;
+        const total = 12;
+        const tick = setInterval(() => {
+          frame++;
+          el.textContent = finalText
+            .split('')
+            .map((ch, i) =>
+              ch === ' '
+                ? ' '
+                : frame / total > i / finalText.length
+                  ? ch
+                  : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+            )
+            .join('');
+          if (frame >= total) {
+            clearInterval(tick);
+            el.textContent = finalText;
+          }
+        }, 35);
+      }
+
+      /* ---------------- claim / login / session ---------------- */
+      function refreshClaimBtn() {
+        $('claimBtn').disabled = !(
+          candidate && /^\d{4,8}$/.test($('pinClaim').value)
+        );
+      }
+      $('pinClaim').oninput = refreshClaimBtn;
+      $('rollBtn').onclick = rollCodename;
+
+      $('claimBtn').onclick = async () => {
+        setMsg($('claimMsg'), '', '');
+        $('claimBtn').disabled = true;
+        const res = await apiPost({
+          action: 'register',
+          codename: candidate,
+          pin: $('pinClaim').value,
+          name: $('nameClaim').value,
+        });
+        if (res.ok) {
+          startSession(res.codename || candidate, $('pinClaim').value);
+          await load();
+        } else {
+          setMsg($('claimMsg'), res.error || 'Something went wrong.', 'err');
+          if (/claimed/i.test(res.error || '')) rollCodename();
+        }
+        refreshClaimBtn();
+      };
+
+      $('showLogin').onclick = () => {
+        const v = $('loginView');
+        v.style.display = v.style.display === 'none' ? 'block' : 'none';
+      };
+      $('loginBtn').onclick = () => {
+        setMsg($('claimMsg'), '', '');
+        const codename = norm($('codenameLogin').value);
+        const pin = $('pinLogin').value;
+        if (!codename || !/^\d{4,8}$/.test(pin)) {
+          setMsg(
+            $('claimMsg'),
+            'Enter your codename and 4–8 digit PIN.',
+            'err'
+          );
+          return;
+        }
+        if (!data.codenames.map(norm).includes(codename)) {
+          setMsg($('claimMsg'), "That codename isn't on the books.", 'err');
+          return;
+        }
+        startSession(codename, pin);
+      };
+
+      function startSession(codename, pin) {
+        session = { codename, pin };
+        saveSession(session);
+        $('appTitle').textContent = 'Hi, ' + codename;
+        $('tagline').textContent =
+          "You're on the board. Tick the cells in your row as you finish tasks.";
+        $('sessionName').textContent = codename;
+        $('restoringView').style.display = 'none';
+        $('claimView').style.display = 'none';
+        $('sessionView').style.display = 'block';
+        renderBoard();
+      }
+      $('signOutBtn').onclick = () => {
+        session = null;
+        clearStoredSession();
+        $('appTitle').textContent = 'The Forge';
+        $('tagline').textContent =
+          "Anonymous progress board. Codenames only — tick a box when you've done a task.";
+        $('sessionView').style.display = 'none';
+        $('restoringView').style.display = 'none';
+        $('claimView').style.display = 'block';
+        setMsg($('gridMsg'), '', '');
+        renderBoard();
+      };
+
+      /* ---------------- board state helpers ---------------- */
+      function isDone(codename, taskId) {
+        const e = data.board.find(
+          (b) => norm(b.codename) === norm(codename) && b.taskId === taskId
+        );
+        return e ? e.done : false;
+      }
+      function setLocalDone(codename, taskId, done) {
+        const e = data.board.find(
+          (b) => norm(b.codename) === norm(codename) && b.taskId === taskId
+        );
+        if (e) {
+          e.done = done;
+          e.updatedAt = new Date().toISOString();
+        } else {
+          data.board.push({
+            codename,
+            taskId,
+            done,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      }
+
+      /* ---------------- toggling your own cell ---------------- */
+      async function toggleCell(taskId) {
+        if (!session || pending.has(taskId)) return;
+        const next = !isDone(session.codename, taskId);
+        pending.add(taskId);
+        setLocalDone(session.codename, taskId, next);
+        renderBoard();
+        const saving = showToast('Saving…', '', {
+          sticky: true,
+          spinner: true,
+        });
+
+        const res = await apiPost({
+          action: 'update',
+          codename: session.codename,
+          pin: session.pin,
+          taskId,
+          done: next,
+        });
+        pending.delete(taskId);
+        dismissToast(saving);
+        if (res.ok) {
+          showToast(next ? 'Marked done ✓' : 'Marked not done', 'ok');
+        } else {
+          setLocalDone(session.codename, taskId, !next); // revert
+          showToast(res.error || "Couldn't save — try again", 'err', {
+            duration: 3200,
+          });
+          if (/wrong codename or pin/i.test(res.error || ''))
+            $('signOutBtn').click();
+        }
+        renderBoard();
+      }
+
+      /* ---------------- task description modal ---------------- */
+      function openTask(taskId) {
+        const t = data.tasks.find((x) => x.id === taskId);
+        if (!t) return;
+        $('dtLabel').textContent = t.label;
+        $('dtBody').innerHTML = t.description
+          ? linkify(t.description)
+          : 'No description provided.';
+        $('modal').hidden = false;
+        $('dtClose').focus();
+      }
+      function closeModal() {
+        $('modal').hidden = true;
+      }
+      $('dtClose').onclick = closeModal;
+      $('modal').onclick = (e) => {
+        if (e.target === $('modal')) closeModal();
+      };
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !$('modal').hidden) closeModal();
+      });
+
+      /* ---------------- board rendering ---------------- */
+      function renderBoard() {
+        const wrap = $('gridWrap');
+        if (!data.tasks.length) {
+          wrap.innerHTML =
+            "<p class='empty-state'>No tasks yet. The admin adds them in the sheet's Tasks tab.</p>";
+          return;
+        }
+
+        // Row order: you first (if signed in, pinned under admin), then everyone else alphabetically.
+        const youName = session ? session.codename : null;
+        const others = data.codenames
+          .filter((c) => !youName || norm(c) !== norm(youName))
+          .sort((a, b) => norm(a).localeCompare(norm(b)));
+        const rows = youName ? [youName, ...others] : others;
+
+        const head = `
+    <thead>
+      <tr>
+        <th class="corner"><div class="corner-label">codename ╲ task</div></th>
+        ${data.tasks
+          .map(
+            (t) => `
+          <th class="task-th" data-task="${esc(t.id)}">
+            <button type="button" title="Tap for description">
+              <span>${esc(t.label)}</span><span class="info-dot">i</span>
+            </button>
+          </th>`
+          )
+          .join('')}
+      </tr>
+    </thead>`;
+
+        const adminCells = data.tasks
+          .map(
+            (t) =>
+              `<td>${t.adminDone ? "<span class='check'>✓</span>" : "<span class='blank'>·</span>"}</td>`
+          )
+          .join('');
+        const adminRow = `
+    <tr class="admin-row">
+      <th class="who">${esc(ADMIN_NAME)}<span class="admin-tag">ADMIN</span></th>
+      ${adminCells}
+    </tr>`;
+
+        const bodyRows = rows
+          .map((code) => {
+            const you = youName && norm(code) === norm(youName);
+            const cells = data.tasks
+              .map((t) => {
+                const done = isDone(code, t.id);
+                if (you) {
+                  const isPending = pending.has(t.id);
+                  const inner = isPending
+                    ? "<span class='spinner' aria-hidden='true'></span>"
+                    : done
+                      ? "<span class='check'>✓</span>"
+                      : "<span class='box'>＋</span>";
+                  return `<td><button class="cell-btn${isPending ? ' pending' : ''}" type="button" data-task="${esc(t.id)}"
+                   aria-pressed="${done}" aria-label="${done ? 'Done' : 'Mark done'}: ${esc(t.label)}">${inner}</button></td>`;
+                }
+                return `<td>${done ? "<span class='check'>✓</span>" : "<span class='blank'>·</span>"}</td>`;
+              })
+              .join('');
+            return `<tr class="${you ? 'you-row' : ''}">
+      <th class="who">${esc(code)}${you ? "<span class='you-tag'>YOU</span>" : ''}</th>${cells}</tr>`;
+          })
+          .join('');
+
+        const totalPeople = rows.length + 1; // + admin
+        const footCells = data.tasks
+          .map((t) => {
+            const count =
+              (t.adminDone ? 1 : 0) +
+              rows.reduce((s, c) => s + (isDone(c, t.id) ? 1 : 0), 0);
+            return `<td>${count}/${totalPeople}</td>`;
+          })
+          .join('');
+        const foot = `<tfoot><tr><th class="who">done</th>${footCells}</tr></tfoot>`;
+
+        wrap.innerHTML = `<table class="grid">${head}<tbody>${adminRow}${bodyRows || ''}</tbody>${foot}</table>`;
+        if (!rows.length) {
+          // still show admin row; add a gentle nudge under the grid
+          setMsg(
+            $('gridMsg'),
+            "No one's joined yet — roll a codename to claim the first row.",
+            'ok'
+          );
+        }
+
+        wrap
+          .querySelectorAll('.task-th button')
+          .forEach(
+            (b) =>
+              (b.onclick = () => openTask(b.closest('.task-th').dataset.task))
+          );
+        wrap
+          .querySelectorAll('.cell-btn')
+          .forEach((b) => (b.onclick = () => toggleCell(b.dataset.task)));
+      }
+
+      /* ---------------- load ---------------- */
+      async function load() {
+        try {
+          const res = await apiGet();
+          if (!res.ok) throw new Error(res.error || 'Bad response');
+          data = res;
+          if (!restoreSession()) {
+            if (!session) {
+              // genuinely signed out
+              $('restoringView').style.display = 'none';
+              $('claimView').style.display = 'block';
+            }
+            renderBoard();
+          }
+          $('refreshNote').textContent =
+            'updated ' + new Date().toLocaleTimeString();
+        } catch (err) {
+          $('gridWrap').innerHTML =
+            "<p class='empty-state'>Couldn't reach the sheet. Check SCRIPT_URL and that the web app is deployed with access “Anyone”, then refresh.</p>";
+          if (!session) {
+            // drop the "signing in" state on failure
+            $('restoringView').style.display = 'none';
+            $('claimView').style.display = 'block';
+          }
+        }
+      }
+
+      /* ---------------- demo data (until SCRIPT_URL is set) ---------------- */
+      function demoData() {
+        $('setupBanner').classList.add('show');
+        return {
+          ok: true,
+          tasks: [
+            {
+              id: 't1',
+              label: 'Read ch. 1–4',
+              description:
+                "First four chapters plus the end-of-chapter exercises. No skimming — we'll know.\n\nReference: https://example.com/handbook",
+              adminDone: true,
+            },
+            {
+              id: 't2',
+              label: 'Build demo',
+              description:
+                'Anything that runs counts. Polish optional, shipping mandatory.',
+              adminDone: false,
+            },
+            {
+              id: 't3',
+              label: 'Write tests',
+              description: 'At least one test per module. Red-green-refactor.',
+              adminDone: false,
+            },
+            {
+              id: 't4',
+              label: 'Deploy',
+              description: 'Ship it somewhere with a public URL.',
+              adminDone: false,
+            },
+          ],
+          codenames: ['feral mongoose', 'polite walrus', 'silent kestrel'],
+          board: [
+            {
+              codename: 'feral mongoose',
+              taskId: 't1',
+              done: true,
+              updatedAt: new Date(Date.now() - 36e5).toISOString(),
+            },
+            {
+              codename: 'feral mongoose',
+              taskId: 't2',
+              done: true,
+              updatedAt: new Date(Date.now() - 36e5).toISOString(),
+            },
+            {
+              codename: 'polite walrus',
+              taskId: 't1',
+              done: true,
+              updatedAt: new Date(Date.now() - 864e5).toISOString(),
+            },
+            {
+              codename: 'silent kestrel',
+              taskId: 't3',
+              done: true,
+              updatedAt: new Date(Date.now() - 72e5).toISOString(),
+            },
+          ],
+        };
+      }
+
+      // If a saved session exists, show "Signing you in…" right away so the
+      // sign-up screen doesn't flash while the board's first fetch is in flight.
+      if (readStoredSession()) {
+        $('claimView').style.display = 'none';
+        $('restoringView').style.display = 'flex';
+      }
+      load();
+    </script>
+  </body>
+</html>
