@@ -499,10 +499,12 @@
           ? linkify(t.description)
           : 'No description provided.';
         $('modal').hidden = false;
+        document.documentElement.style.overflow = 'hidden';
         $('dtClose').focus();
       }
       function closeModal() {
         $('modal').hidden = true;
+        document.documentElement.style.overflow = '';
       }
       $('dtClose').onclick = closeModal;
       $('modal').onclick = (e) => {
@@ -524,10 +526,12 @@
         confirmCb = opts.onConfirm || null;
         $('confirmModal').hidden = false;
         $('confirmCancel').focus();
+        document.documentElement.style.overflow = 'hidden';
       }
       function closeConfirm() {
         $('confirmModal').hidden = true;
         confirmCb = null;
+        document.documentElement.style.overflow = '';
       }
       $('confirmCancel').onclick = closeConfirm;
       $('confirmModal').onclick = (e) => {
