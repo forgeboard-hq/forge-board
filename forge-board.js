@@ -525,11 +525,30 @@ $('loginBtn').onclick = async () => {
   setMsg($('loginMsg'), '', '');
   const codename = norm($('codenameLogin').value);
   const pin = $('pinLogin').value;
-  if (!codename || !/^\d{4,8}$/.test(pin)) {
-    setMsg($('loginMsg'), 'Enter your codename and 4–8 digit PIN.', 'err');
+  if (!codename || !pin) {
+    setMsg($('loginMsg'), 'Enter your codename and PIN.', 'err');
     return;
   }
   $('loginBtn').disabled = true;
+
+  // Keeper login — separate auth path, no Users sheet involved.
+  if (codename === norm(ADMIN_NAME)) {
+    const res = await apiPost({ action: 'keeperLogin', pin });
+    $('loginBtn').disabled = false;
+    if (!res.ok) { setMsg($('loginMsg'), res.error || 'Wrong PIN.', 'err'); return; }
+    const board = await apiGet();
+    if (board && board.ok) data = board;
+    closeSignInModal();
+    startSession(ADMIN_NAME, pin, undefined, true);
+    return;
+  }
+
+  // Regular user login.
+  if (!/^\d{4,8}$/.test(pin)) {
+    $('loginBtn').disabled = false;
+    setMsg($('loginMsg'), 'Enter your codename and 4–8 digit PIN.', 'err');
+    return;
+  }
   const res = await apiGet();
   $('loginBtn').disabled = false;
   if (!res || !res.ok) {
@@ -593,10 +612,10 @@ $('recoverySubmitBtn').onclick = async () => {
   }
 };
 
-function startSession(codename, pin, recoveryKey) {
-  session = { codename, pin };
+function startSession(codename, pin, recoveryKey, isAdmin) {
+  session = { codename, pin, isAdmin: !!isAdmin };
   const existing = readStoredSession() || {};
-  const toStore = { codename, pin };
+  const toStore = { codename, pin, isAdmin: !!isAdmin };
   if (recoveryKey !== undefined) {
     toStore.key = recoveryKey;
     toStore.keyAcknowledged = false;
@@ -606,11 +625,17 @@ function startSession(codename, pin, recoveryKey) {
   }
   saveSession(toStore);
   $('sessionName').textContent = codename;
+  $('identityHeading').textContent = session.isAdmin ? 'Keeper dashboard' : 'Your progress';
   $('restoringView').style.display = 'none';
   $('claimView').style.display = 'none';
   $('sessionView').style.display = 'block';
+  $('adminPanel').style.display = session.isAdmin ? 'block' : 'none';
+  $('keeperGif').style.display = session.isAdmin ? 'block' : 'none';
+  $('nextStepBtn').style.display = session.isAdmin ? 'none' : '';
+  $('clearBtn').style.display = session.isAdmin ? 'none' : '';
   showSignedIn(true);
   renderBoard();
+  if (session.isAdmin) renderAdminPanel();
 }
 $('signOutBtn').onclick = () => {
   session = null;
@@ -619,10 +644,12 @@ $('signOutBtn').onclick = () => {
   $('sessionView').style.display = 'none';
   $('restoringView').style.display = 'none';
   $('claimView').style.display = 'block';
+  $('adminPanel').style.display = 'none';
+  $('keeperGif').style.display = 'none';
+  $('identityHeading').textContent = 'Claim your codename';
   showSignedIn(false);
   setMsg($('gridMsg'), '', '');
   setMsg($('claimMsg'), '', '');
-  // Reset all form fields so stale state isn't visible on re-open
   $('pinClaim').value = '';
   $('codenameLogin').value = '';
   $('pinLogin').value = '';
@@ -949,6 +976,316 @@ async function doReset() {
   }
 }
 
+/* ---------------- admin tick ---------------- */
+async function toggleAdminCell(taskId) {
+  if (!session || !session.isAdmin || pending.has('admin:' + taskId)) return;
+  const task = data.tasks.find((t) => t.id === taskId);
+  if (!task) return;
+  const next = !task.adminDone;
+  const pendingKey = 'admin:' + taskId;
+  pending.add(pendingKey);
+  task.adminDone = next;
+  renderBoard();
+  const saving = showToast('Saving…', '', { sticky: true, spinner: true });
+  const res = await apiPost({ action: 'adminTick', pin: session.pin, taskId, done: next });
+  pending.delete(pendingKey);
+  dismissToast(saving);
+  if (res.ok) {
+    showToast(next ? 'Marked done ✓' : 'Marked not done', 'ok');
+  } else {
+    task.adminDone = !next;
+    showToast(res.error || "Couldn't save — try again", 'err', { duration: 3200 });
+  }
+  renderBoard();
+}
+
+/* ---------------- admin panel ---------------- */
+let editingTaskId = null; // null = adding, else = editing
+
+function renderAdminPanel() {
+  const panel = $('adminPanel');
+  const sections = [...new Set(data.tasks.map((t) => (t.section || '').trim()).filter(Boolean))];
+
+  const taskRows = data.tasks.map((t) => `
+    <tr>
+      <td class="ap-check-cell"><input type="checkbox" class="ap-row-check" data-id="${esc(t.id)}" /></td>
+      <td class="ap-label">${esc(t.label)}${t.section ? `<span class="ap-label-section">${esc(t.section)}</span>` : ''}</td>
+      <td class="ap-section ap-section-col">${esc(t.section || '—')}</td>
+      <td class="ap-actions">
+        <button class="btn sm" data-edit="${esc(t.id)}">Edit</button>
+        <button class="btn sm danger" data-delete="${esc(t.id)}">Delete</button>
+        <button class="btn sm" data-preview="${esc(t.id)}">Preview</button>
+      </td>
+    </tr>`).join('');
+
+  panel.innerHTML = `
+    <div class="ap-wrap">
+      <button class="ap-toggle" id="apToggle" type="button" aria-expanded="true">
+        <span>Manage Tasks</span><span class="ap-toggle-icon">▾</span>
+      </button>
+      <div class="ap-collapsible" id="apCollapsible">
+      ${data.tasks.length ? `
+        <div class="ap-search-wrap">
+          <input type="text" id="apSearch" placeholder="Search by label or section…" autocomplete="off" />
+        </div>
+        <div class="ap-bulk-bar" id="apBulkBar" style="display:none">
+          <span id="apBulkCount">0 selected</span>
+          <button class="btn sm danger" id="apBulkDeleteBtn">Delete selected</button>
+        </div>
+        <div class="ap-table-wrap">
+          <table class="ap-table">
+            <thead><tr>
+              <th class="ap-check-cell"><input type="checkbox" id="apSelectAll" title="Select all" /></th>
+              <th>Label</th><th class="ap-section-col">Section</th><th></th>
+            </tr></thead>
+            <tbody>${taskRows}</tbody>
+          </table>
+        </div>` : `<p class="hint" style="margin-bottom:12px">No tasks yet — add one below.</p>`}
+
+      <div class="ap-form" id="apForm">
+        <h4 class="ap-form-heading" id="apFormHeading">Add task</h4>
+        <div class="field">
+          <label for="apLabel">Label</label>
+          <input type="text" id="apLabel" maxlength="80" placeholder="e.g. Read chapter 1" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="apDesc">Description</label>
+          <textarea id="apDesc" rows="3" placeholder="Optional details, links, instructions…"></textarea>
+        </div>
+        <div class="field">
+          <label for="apSection">Section</label>
+          <input type="text" id="apSection" maxlength="60" placeholder="e.g. Week 1" list="apSectionList" autocomplete="off" />
+          <datalist id="apSectionList">${sections.map((s) => `<option value="${esc(s)}">`).join('')}</datalist>
+        </div>
+        <div class="ap-form-actions">
+          <button class="btn primary" id="apSubmitBtn">Add task</button>
+          <button class="btn" id="apCancelEdit" style="display:none">Cancel</button>
+          <button class="btn" id="apPreviewBtn" type="button">Preview</button>
+        </div>
+        <p class="msg" id="apMsg"></p>
+      </div>
+      </div>
+    </div>`;
+
+  // Multi-select logic
+  function getCheckedIds() {
+    return [...panel.querySelectorAll('.ap-row-check:checked')].map((c) => c.dataset.id);
+  }
+  function refreshBulkBar() {
+    const ids = getCheckedIds();
+    const bar = $('apBulkBar');
+    if (!bar) return;
+    bar.style.display = ids.length ? 'flex' : 'none';
+    $('apBulkCount').textContent = `${ids.length} selected`;
+  }
+  if ($('apSelectAll')) {
+    $('apSelectAll').onchange = (e) => {
+      panel.querySelectorAll('.ap-row-check').forEach((c) => (c.checked = e.target.checked));
+      refreshBulkBar();
+    };
+  }
+  panel.querySelectorAll('.ap-row-check').forEach((c) => {
+    c.onchange = () => {
+      const all = panel.querySelectorAll('.ap-row-check');
+      const checked = panel.querySelectorAll('.ap-row-check:checked');
+      if ($('apSelectAll')) $('apSelectAll').indeterminate = checked.length > 0 && checked.length < all.length;
+      if ($('apSelectAll')) $('apSelectAll').checked = checked.length === all.length && all.length > 0;
+      refreshBulkBar();
+    };
+  });
+  if ($('apBulkDeleteBtn')) {
+    $('apBulkDeleteBtn').onclick = () => {
+      const ids = getCheckedIds();
+      if (!ids.length) return;
+      const labels = ids.map((id) => data.tasks.find((t) => t.id === id)?.label).filter(Boolean);
+      openConfirm({
+        eyebrow: 'Delete tasks',
+        title: `Delete ${ids.length} task${ids.length > 1 ? 's' : ''}?`,
+        message: `This will remove: ${labels.join(', ')}. All member progress for these tasks will also be cleared.`,
+        okText: 'Delete all',
+        onConfirm: () => doBulkDelete(ids),
+      });
+    };
+  }
+
+  // Expand / collapse
+  if ($('apToggle')) {
+    $('apToggle').onclick = () => {
+      const expanded = $('apToggle').getAttribute('aria-expanded') === 'true';
+      $('apToggle').setAttribute('aria-expanded', String(!expanded));
+      $('adminPanel').classList.toggle('ap-panel-collapsed', expanded);
+      const col = $('apCollapsible');
+      if (expanded) {
+        // Collapsing: start transition then hide after it finishes.
+        col.classList.add('ap-collapsed');
+        col.addEventListener('transitionend', () => { col.style.display = 'none'; }, { once: true });
+      } else {
+        // Expanding: show first, then remove collapsed class to trigger transition.
+        col.style.display = '';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => col.classList.remove('ap-collapsed'));
+        });
+      }
+    };
+  }
+
+  // Search filter
+  if ($('apSearch')) {
+    $('apSearch').oninput = () => {
+      const q = $('apSearch').value.trim().toLowerCase();
+      panel.querySelectorAll('.ap-table tbody tr').forEach((row) => {
+        const label = (row.querySelector('.ap-label')?.textContent || '').toLowerCase();
+        const section = (row.querySelector('.ap-section')?.textContent || '').toLowerCase();
+        row.style.display = !q || label.includes(q) || section.includes(q) ? '' : 'none';
+      });
+    };
+  }
+
+  // Task table action buttons
+  panel.querySelectorAll('[data-edit]').forEach((b) => {
+    b.onclick = () => startEditTask(b.dataset.edit);
+  });
+  panel.querySelectorAll('[data-delete]').forEach((b) => {
+    b.onclick = () => confirmDeleteTask(b.dataset.delete);
+  });
+  panel.querySelectorAll('[data-preview]').forEach((b) => {
+    b.onclick = () => previewTask(b.dataset.preview);
+  });
+
+  $('apPreviewBtn').onclick = () => {
+    const label = $('apLabel').value.trim();
+    const desc = $('apDesc').value.trim();
+    if (!label) { setMsg($('apMsg'), 'Enter a label to preview.', 'err'); return; }
+    $('dtLabel').textContent = label;
+    $('dtBody').innerHTML = desc ? linkify(desc) : 'No description provided.';
+    $('modal').hidden = false;
+    animateModal($('modal'));
+    document.documentElement.style.overflow = 'hidden';
+  };
+
+  $('apSubmitBtn').onclick = () => editingTaskId ? doEditTask() : doAddTask();
+
+  $('apCancelEdit').onclick = () => {
+    editingTaskId = null;
+    $('apFormHeading').textContent = 'Add task';
+    $('apSubmitBtn').textContent = 'Add task';
+    $('apCancelEdit').style.display = 'none';
+    $('apLabel').value = '';
+    $('apDesc').value = '';
+    $('apSection').value = '';
+    setMsg($('apMsg'), '', '');
+  };
+}
+
+function startEditTask(taskId) {
+  const t = data.tasks.find((x) => x.id === taskId);
+  if (!t) return;
+  editingTaskId = taskId;
+  $('apFormHeading').textContent = 'Edit task';
+  $('apSubmitBtn').textContent = 'Save changes';
+  $('apCancelEdit').style.display = '';
+  $('apLabel').value = t.label;
+  $('apDesc').value = t.description || '';
+  $('apSection').value = t.section || '';
+  $('apLabel').focus();
+  $('apForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function previewTask(taskId) {
+  const t = data.tasks.find((x) => x.id === taskId);
+  if (!t) return;
+  $('dtLabel').textContent = t.label;
+  $('dtBody').innerHTML = t.description ? linkify(t.description) : 'No description provided.';
+  $('modal').hidden = false;
+  animateModal($('modal'));
+  document.documentElement.style.overflow = 'hidden';
+}
+
+async function doAddTask() {
+  const label = $('apLabel').value.trim();
+  const desc = $('apDesc').value.trim();
+  const section = $('apSection').value.trim();
+  if (!label) { setMsg($('apMsg'), 'Label is required.', 'err'); return; }
+  $('apSubmitBtn').disabled = true;
+  const res = await apiPost({ action: 'addTask', pin: session.pin, label, description: desc, section });
+  $('apSubmitBtn').disabled = false;
+  if (res.ok) {
+    data.tasks.push({ id: res.taskId, label, description: desc, adminDone: false, section });
+    $('apLabel').value = '';
+    $('apDesc').value = '';
+    $('apSection').value = '';
+    setMsg($('apMsg'), 'Task added.', 'ok');
+    renderBoard();
+    renderAdminPanel();
+  } else {
+    setMsg($('apMsg'), res.error || 'Failed to add task.', 'err');
+  }
+}
+
+async function doEditTask() {
+  const label = $('apLabel').value.trim();
+  const desc = $('apDesc').value.trim();
+  const section = $('apSection').value.trim();
+  if (!label) { setMsg($('apMsg'), 'Label is required.', 'err'); return; }
+  $('apSubmitBtn').disabled = true;
+  const res = await apiPost({ action: 'editTask', pin: session.pin, taskId: editingTaskId, label, description: desc, section });
+  $('apSubmitBtn').disabled = false;
+  if (res.ok) {
+    const t = data.tasks.find((x) => x.id === editingTaskId);
+    if (t) { t.label = label; t.description = desc; t.section = section; }
+    editingTaskId = null;
+    setMsg($('apMsg'), 'Task updated.', 'ok');
+    renderBoard();
+    renderAdminPanel();
+  } else {
+    setMsg($('apMsg'), res.error || 'Failed to update task.', 'err');
+  }
+}
+
+function confirmDeleteTask(taskId) {
+  const t = data.tasks.find((x) => x.id === taskId);
+  if (!t) return;
+  openConfirm({
+    eyebrow: 'Delete task',
+    title: `Delete "${t.label}"?`,
+    message: 'This removes the task from the board and clears all member progress for it.',
+    okText: 'Delete',
+    onConfirm: () => doDeleteTask(taskId),
+  });
+}
+
+async function doDeleteTask(taskId) {
+  const saving = showToast('Deleting…', '', { sticky: true, spinner: true });
+  const res = await apiPost({ action: 'deleteTask', pin: session.pin, taskId });
+  dismissToast(saving);
+  if (res.ok) {
+    data.tasks = data.tasks.filter((t) => t.id !== taskId);
+    data.board = data.board.filter((b) => b.taskId !== taskId);
+    showToast('Task deleted.', 'ok');
+    renderBoard();
+    renderAdminPanel();
+  } else {
+    showToast(res.error || 'Failed to delete.', 'err', { duration: 3200 });
+  }
+}
+
+async function doBulkDelete(ids) {
+  const saving = showToast(`Deleting ${ids.length} tasks…`, '', { sticky: true, spinner: true });
+  const results = await Promise.all(ids.map((id) => apiPost({ action: 'deleteTask', pin: session.pin, taskId: id })));
+  dismissToast(saving);
+  const failed = ids.filter((_, i) => !results[i].ok);
+  const deleted = ids.filter((_, i) => results[i].ok);
+  data.tasks = data.tasks.filter((t) => !deleted.includes(t.id));
+  data.board = data.board.filter((b) => !deleted.includes(b.taskId));
+  renderBoard();
+  renderAdminPanel();
+  if (failed.length) {
+    showToast(`${deleted.length} deleted, ${failed.length} failed.`, 'err', { duration: 3500 });
+  } else {
+    showToast(`${deleted.length} task${deleted.length > 1 ? 's' : ''} deleted.`, 'ok');
+  }
+}
+
 /* ---------------- board rendering ---------------- */
 function renderBoard() {
   const wrap = $('gridWrap');
@@ -991,11 +1328,19 @@ function renderBoard() {
   const chip = (n) => `<span class="steps-chip">${n} of ${k} steps</span>`;
 
   const adminDoneN = data.tasks.reduce((s, t) => s + (t.adminDone ? 1 : 0), 0);
+  const isAdmin = session && session.isAdmin;
   const adminCells = cols
-    .map(
-      (t) =>
-        `<td>${t.adminDone ? "<span class='check'>✓</span>" : "<span class='blank'>·</span>"}</td>`
-    )
+    .map((t) => {
+      if (isAdmin) {
+        const done = t.adminDone;
+        const isPending = pending.has('admin:' + t.id);
+        return `<td><button class="cell-btn admin-cell${isPending ? ' pending' : ''}" type="button" data-task="${esc(t.id)}"
+          aria-pressed="${done}" aria-label="${done ? 'Done' : 'Mark done'}: ${esc(t.label)}">
+          ${done ? "<span class='check'>✓</span>" : "<span class='box'>＋</span>"}
+        </button></td>`;
+      }
+      return `<td>${t.adminDone ? "<span class='check'>✓</span>" : "<span class='blank'>·</span>"}</td>`;
+    })
     .join('');
   const adminRow = `
     <tr class="admin-row">
@@ -1047,8 +1392,11 @@ function renderBoard() {
       (b) => (b.onclick = () => openTask(b.closest('.task-th').dataset.task))
     );
   wrap
-    .querySelectorAll('.cell-btn')
+    .querySelectorAll('.cell-btn:not(.admin-cell)')
     .forEach((b) => (b.onclick = () => toggleCell(b.dataset.task)));
+  wrap
+    .querySelectorAll('.admin-cell')
+    .forEach((b) => (b.onclick = () => toggleAdminCell(b.dataset.task)));
   updateProgress();
 }
 
@@ -1056,10 +1404,9 @@ function renderBoard() {
 function updateProgress() {
   if (!session) return;
   const k = data.tasks.length;
-  const n = data.tasks.reduce(
-    (s, t) => s + (isDone(session.codename, t.id) ? 1 : 0),
-    0
-  );
+  const n = session.isAdmin
+    ? data.tasks.reduce((s, t) => s + (t.adminDone ? 1 : 0), 0)
+    : data.tasks.reduce((s, t) => s + (isDone(session.codename, t.id) ? 1 : 0), 0);
   const pct = k ? Math.round((n / k) * 100) : 0;
   $('progFill').style.width = pct + '%';
   $('progText').textContent = `${n} of ${k} steps`;
@@ -1082,12 +1429,12 @@ function init() {
     $('restoringView').style.display = 'flex';
     $('gateScreen').style.display = 'none';
     $('boardSection').style.display = 'none';
-    apiGet({ codename: stored.codename })
+    apiGet(stored.isAdmin ? undefined : { codename: stored.codename })
       .then((res) => {
         if (!res || !res.ok) throw new Error(res.error || '');
         data = res;
-        startSession(stored.codename, stored.pin);
-        jumpToNextStep({ silent: true });
+        startSession(stored.codename, stored.pin, undefined, stored.isAdmin);
+        if (!stored.isAdmin) jumpToNextStep({ silent: true });
         if (stored.key && !stored.keyAcknowledged) {
           openRecoveryModal(stored.key);
         }

@@ -116,6 +116,7 @@
         </div>
 
         <div id="sessionView" style="display: none">
+          <img id="keeperGif" src="./assets/jesus.gif" alt="" class="keeper-gif-panel" style="display:none" />
           <div class="session-badge"><span id="sessionName"></span></div>
           <div class="prog">
             <div class="prog-track">
@@ -156,6 +157,9 @@
           </button>
         </div>
       </section>
+
+      <!-- ===== admin panel (keeper only) ===== -->
+      <section class="panel" id="adminPanel" style="display:none"></section>
 
       <!-- ===== gate (shown until signed in) ===== -->
       <section id="gateScreen" class="gate" style="display: none">
@@ -265,7 +269,7 @@
             </div>
             <div class="field">
               <label for="pinLogin">PIN</label>
-              <input type="password" id="pinLogin" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" />
+              <input type="password" id="pinLogin" autocomplete="off" maxlength="32" placeholder="••••" />
             </div>
           </div>
           <div class="confirm-actions">
