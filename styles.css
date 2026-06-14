@@ -1138,10 +1138,13 @@ table.grid {
   padding-bottom: 0;
 }
 
+.ap-label-section { display: none; }
+
 @media (max-width: 560px) {
   .ap-section-col { display: none; }
   .ap-label { display: flex; flex-direction: column; gap: 2px; }
   .ap-label-section {
+    display: block;
     font-size: 0.75rem;
     color: var(--ink-soft);
     font-weight: 400;
