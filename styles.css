@@ -1151,3 +1151,23 @@ table.grid {
   }
   .ap-actions { flex-wrap: wrap; justify-content: flex-start; }
 }
+
+.session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.session-btn {
+  background: var(--bg);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.session-btn--danger {
+  color: var(--danger);
+  /* border-color: var(--danger); */
+}
+.session-btn--muted {
+  color: var(--accent);
+  /* border-color: var(--accent); */
+}

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Forge</title>
+    <title>Knowing God</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,11 +15,11 @@
   <body>
     <div class="wrap">
       <header>
-        <h1 id="appTitle">The Forge</h1>
+        <h1 id="appTitle">Knowing God</h1>
         <button id="themeToggle" aria-label="Toggle dark mode">◐ theme</button>
       </header>
       <p class="tagline" id="tagline">
-        “As iron sharpens iron, so one person sharpens another.” — Proverbs 27:17
+        A journey through the whole bible to met the One God in three persons
       </p>
 
       <div id="setupBanner" class="banner">
@@ -68,7 +68,7 @@
               <label for="nameClaim"
                 >Your name
                 <span style="color: var(--ink-soft); font-weight: 400"
-                  >(only the keeper sees this — never the board)</span
+                  >(only visible to the keeper)</span
                 ></label
               >
               <input
@@ -76,7 +76,7 @@
                 id="nameClaim"
                 autocomplete="off"
                 maxlength="80"
-                placeholder="e.g. Mary Magdalene"
+                placeholder="first and last name"
               />
             </div>
           </div>
@@ -93,22 +93,21 @@
               />
             </div>
             <button class="btn primary" id="claimBtn" type="button" disabled>
-              Claim codename
+              Begin Journey!
             </button>
           </div>
           <p class="hint">
-            Your codename is drawn at random.
+            
             <strong
-              >Write it down with your PIN — they're your only way back in, and
-              this page won't remember them for you.</strong
+              >Save your CODENAME and PIN to sign back in any time.</strong
             >
           </p>
           <div class="claim-links">
             <button class="linklike" id="showLogin" type="button">
-              Already have a codename? Sign back in
+              Already walking with us? Sign back in
             </button>
             <button class="linklike" id="showRecovery" type="button" style="color: var(--ink-soft)">
-              Forgot your codename or PIN?
+              Lost your codename or PIN?
             </button>
           </div>
 
@@ -131,30 +130,11 @@
             You're in. Your row sits at the top of the board — tap the steps in
             <strong>your</strong> row as you complete them.
           </p>
-          <button
-            class="linklike"
-            id="nextStepBtn"
-            type="button"
-            style="margin-right: 16px"
-          >
-            Current Read
-          </button>
-          <button
-            class="linklike"
-            id="clearBtn"
-            type="button"
-            style="color: var(--danger); margin-right: 16px"
-          >
-            Clear my progress
-          </button>
-          <button
-            class="linklike"
-            id="signOutBtn"
-            type="button"
-            style="color: var(--ink-soft)"
-          >
-            Sign out
-          </button>
+          <div class="session-actions">
+            <button class="btn session-btn" id="nextStepBtn" type="button">Current Read</button>
+            <button class="btn session-btn session-btn--danger" id="clearBtn" type="button">Start over</button>
+            <button class="btn session-btn session-btn--muted" id="signOutBtn" type="button">Sign out</button>
+          </div>
         </div>
       </section>
 
@@ -164,12 +144,11 @@
       <!-- ===== gate (shown until signed in) ===== -->
       <section id="gateScreen" class="gate" style="display: none">
         <div class="gate-card">
-          <p class="gate-eyebrow">Begin</p>
+          <p class="gate-eyebrow">JOIN THE</p>
           <div class="gate-count" id="gateCount">—</div>
           <p class="gate-line" id="gateLine">Gathering the disciples…</p>
           <p class="gate-sub">
-            Cast a codename above and set a PIN to join them. The board opens
-            once you're in.
+            Claim a CODENAME above and set a PIN to join them
           </p>
         </div>
       </section>
@@ -177,15 +156,14 @@
       <!-- ===== board ===== -->
       <section id="boardSection" style="display: none">
         <div class="board-head">
-          <h2>Board</h2>
+          <h2>THE BOARD</h2>
           <div id="sortControl" class="sort-control" style="display: none">
             <label for="sortSelect">Section</label>
             <select id="sortSelect"></select>
           </div>
         </div>
         <p class="hint">
-          Click on the <span class="info-dot">i</span> icon to get the
-          description!
+          Tap <span class="info-dot">i</span> on any part to see the readings and tap + to mark as done
         </p>
 
         <div class="grid-wrap" id="gridWrap">
@@ -294,7 +272,7 @@
         <button class="modal-close" id="accountRecoveryClose" type="button" aria-label="Close">✕</button>
         <div class="modal-head">
           <div class="modal-eyebrow">Account recovery</div>
-          <div class="dt-label" id="accountRecoveryTitle">Forgot your codename or PIN?</div>
+          <div class="dt-label" id="accountRecoveryTitle">Lost your CODENAME or PIN?</div>
         </div>
         <div class="confirm-body">
           <div class="field-row">
@@ -314,7 +292,7 @@
               <label for="recoveryNewPin">New PIN (4–8 digits)</label>
               <input type="password" id="recoveryNewPin" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" />
             </div>
-            <button class="btn primary" id="recoverySubmitBtn" type="button">Recover</button>
+            <button class="btn primary" id="recoverySubmitBtn" type="button">Restore</button>
           </div>
           <p class="msg" id="recoveryMsg"></p>
         </div>
@@ -332,27 +310,27 @@
     >
       <div class="modal-card recovery-card">
         <div class="modal-head">
-          <div class="modal-eyebrow recovery-eyebrow">Important — Read carefully</div>
+          <div class="modal-eyebrow recovery-eyebrow">READ CAREFULLY</div>
           <div class="dt-label" id="recoveryTitle">Save your Recovery Key</div>
         </div>
         <div class="recovery-body">
           <p class="recovery-warning">
-            This key can restore your codename or reset your PIN if you ever lose them.
-            <strong>It will never be shown again.</strong> Write it down somewhere safe before you close this.
+            The key is the
+            <strong>only way back in</strong> if you lose your CODENAME or PIN. It will not be shown again.
           </p>
           <div class="recovery-key-wrap">
             <span id="recoveryKeyText" class="recovery-key"></span>
           </div>
           <div class="recovery-btn-row">
             <button class="btn" id="copyKeyBtn" type="button">Copy key</button>
-            <button class="btn" id="downloadKeyBtn" type="button">⬇ Download secret.txt</button>
+            <button class="btn" id="downloadKeyBtn" type="button">Download secret.txt</button>
           </div>
           <label class="recovery-ack-label">
             <input type="checkbox" id="recoveryAckCheck" />
-            <span>I have written this down and understand it cannot be retrieved again</span>
+            <span>I understand it cannot be retrieved again</span>
           </label>
           <button class="btn primary" id="recoveryCloseBtn" type="button" disabled>
-            Close
+            I've Saved it. Close
           </button>
         </div>
       </div>
