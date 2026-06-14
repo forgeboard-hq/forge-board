@@ -1299,7 +1299,7 @@ function renderBoard() {
   const cols = orderedTasks();
 
   // Row order: you first (if signed in, pinned under admin), then everyone else alphabetically.
-  const youName = session ? session.codename : null;
+  const youName = (session && !session.isAdmin) ? session.codename : null;
   const others = data.codenames
     .filter((c) => !youName || norm(c) !== norm(youName))
     .sort((a, b) => norm(a).localeCompare(norm(b)));
