@@ -6,6 +6,8 @@ const SCRIPT_URL = 'https://cool-cloud-1221.ash250918.workers.dev';
 /* The name shown on the keeper row (fed by the AdminDone column). */
 const ADMIN_NAME = 'The Keeper';
 
+const INFO_ICON = `<svg class="info-svg" viewBox="0 0 416.979 416.979" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"/></svg>`;
+
 /* ---------------- wordlists for the dice ---------------- */
 const ADJ = [
   'holy', 'just', 'true', 'pure', 'kind', 'meek', 'wise', 'bold',
@@ -36,11 +38,7 @@ const demoMode = !SCRIPT_URL;
 /* ---------------- theme ---------------- */
 const root = document.documentElement;
 const localTheme = localStorage.getItem('theme');
-let theme = localTheme
-  ? localTheme
-  : window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+let theme = localTheme ? localTheme : 'light';
 applyTheme();
 document.getElementById('themeToggle').onclick = () => {
   theme = theme === 'dark' ? 'light' : 'dark';
@@ -450,6 +448,15 @@ function startSession(codename, pin, recoveryKey, isAdmin) {
   if (session.isAdmin) renderAdminPanel();
 }
 $('signOutBtn').onclick = () => {
+  openConfirm({
+    eyebrow: 'Sign out',
+    title: 'Sign out?',
+    message: 'Your codename and PIN stay safe — just sign back in to continue.',
+    okText: 'Sign out',
+    onConfirm: doSignOut,
+  });
+};
+function doSignOut() {
   session = null;
   clearStoredSession();
   data = { tasks: [], codenames: [], board: [] };
@@ -470,7 +477,7 @@ $('signOutBtn').onclick = () => {
   $('recoverySubmitBtn').disabled = false;
   refreshClaimBtn();
   fetchCount();
-};
+}
 
 /* ---------------- board state helpers ---------------- */
 let sortSection = ''; // '' = original order (All)
@@ -1110,11 +1117,12 @@ function renderBoard() {
   renderSortControl();
   const cols = orderedTasks();
 
-  // Row order: you first (if signed in, pinned under admin), then everyone else alphabetically.
+  // Row order: logged-in user first, then others by tick count descending.
   const youName = (session && !session.isAdmin) ? session.codename : null;
+  const tickCount = (c) => data.tasks.reduce((s, t) => s + (isDone(c, t.id) ? 1 : 0), 0);
   const others = data.codenames
     .filter((c) => !youName || norm(c) !== norm(youName))
-    .sort((a, b) => norm(a).localeCompare(norm(b)));
+    .sort((a, b) => tickCount(b) - tickCount(a));
   const rows = youName ? [youName, ...others] : others;
 
   const head = `
@@ -1128,7 +1136,7 @@ function renderBoard() {
             return `
           <th class="task-th"${stripe} data-task="${esc(t.id)}">
             <button type="button" title="Tap for description">
-              <span>${esc(t.label)}</span><span class="info-dot">i</span>
+              <span>${esc(t.label)}</span>${INFO_ICON}
             </button>
           </th>`;
           })

@@ -17,21 +17,21 @@
   --radius: 10px;
 }
 [data-theme='dark'] {
-  --bg: #0d0d0c;
-  --surface: #181815;
-  --surface-2: #20201c;
-  --ink: #ece3cd;
-  --ink-soft: #9c9580;
-  --line: #2a2a25;
-  --line-strong: #3b3b33;
-  --accent: #9fb257;
-  --accent-soft: #1d2114;
-  --amber: #d3a951;
-  --amber-soft: #29230f;
-  --danger: #e0836a;
-  --you: #9fb257;
-  --you-soft: #1d2114;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
+  --bg: #1a1a17;
+  --surface: #242420;
+  --surface-2: #2d2d28;
+  --ink: #f0e8d0;
+  --ink-soft: #b0a888;
+  --line: #3a3a33;
+  --line-strong: #4d4d44;
+  --accent: #b5c96a;
+  --accent-soft: #252b14;
+  --amber: #e0b85a;
+  --amber-soft: #332a10;
+  --danger: #e8907a;
+  --you: #b5c96a;
+  --you-soft: #252b14;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 * {
@@ -46,9 +46,6 @@ body {
   font-family: 'Poppins', system-ui, sans-serif;
   line-height: 1.5;
   min-height: 100vh;
-  transition:
-    background 0.25s,
-    color 0.25s;
 }
 .mono {
   font-family: 'Poppins', sans-serif;
@@ -142,10 +139,10 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
   margin-bottom: 16px;
 }
 #codenameDisplay {
+  flex: 1;
   font:
     600 clamp(1.2rem, 4.5vw, 1.6rem) 'Lora',
     serif;
@@ -523,19 +520,21 @@ thead .corner {
   background: var(--accent-soft);
   color: var(--accent);
 }
-.task-th .info-dot,
-.hint .info-dot {
-  font:
-    600 0.62rem 'Poppins',
-    sans-serif;
-  color: var(--ink-soft);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  width: 15px;
-  height: 15px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.info-svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--ink-soft);
+  flex-shrink: 0;
+  vertical-align: middle;
+  transition: fill 0.15s;
+}
+.task-th button:hover .info-svg {
+  fill: var(--accent);
+}
+.info-svg--hint {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
 }
 
 /* first column (codenames) */
@@ -933,20 +932,23 @@ table.grid {
 }
 
 @media (max-width: 560px) {
-  .panel {
-    padding: 16px;
-  }
+  html { font-size: 14px; }
+  .wrap { padding: 16px 12px 60px; }
+  .panel { padding: 14px; }
+  h1 { font-size: 1.4rem; }
+  .tagline { font-size: 0.82rem; margin-bottom: 16px; }
+  .btn { padding: 8px 12px; font-size: 0.82rem; }
+  .field label { font-size: 0.8rem; }
+  input[type='text'], input[type='password'] { padding: 8px 10px; font-size: 0.88rem; }
   tbody .who,
   tfoot .who {
-    min-width: 120px;
-    max-width: 140px;
+    min-width: 110px;
+    max-width: 130px;
   }
-  .task-th {
-    min-width: 78px;
-  }
-  table.grid td {
-    min-width: 78px;
-  }
+  .task-th { min-width: 70px; }
+  table.grid td { min-width: 70px; }
+  .session-actions { gap: 6px; }
+  .session-btn { padding: 7px 10px; font-size: 0.8rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -1155,10 +1157,12 @@ table.grid {
 .session-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 8px;
+  margin-top: 14px;
 }
 .session-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
   background: var(--bg);
   border-color: var(--line);
   color: var(--accent);
