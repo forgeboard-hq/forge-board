@@ -1156,7 +1156,7 @@ function renderBoard() {
     .join('');
   const adminRow = `
     <tr class="admin-row">
-      <th class="who"><div class="who-name">${esc(ADMIN_NAME)}<span class="admin-tag">KEEPER</span></div>${chip(adminDoneN)}</th>
+      <th class="who"><div class="who-name">${esc(ADMIN_NAME)}<span class="admin-tag">ADMIN</span></div>${chip(adminDoneN)}</th>
       ${adminCells}
     </tr>`;
 

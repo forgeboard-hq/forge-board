@@ -1155,8 +1155,8 @@ table.grid {
 .session-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
+  gap: 12px;
+  margin-top: 20px;
 }
 .session-btn {
   background: var(--bg);
