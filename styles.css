@@ -242,6 +242,10 @@ input[type='password'] {
     sans-serif;
   color: var(--ink);
 }
+::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.5;
+}
 input:focus,
 .btn:focus-visible,
 #themeToggle:focus-visible,
@@ -275,6 +279,12 @@ input:focus,
 .msg.ok {
   color: var(--accent);
   display: block;
+}
+.claim-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
 }
 .linklike {
   background: none;

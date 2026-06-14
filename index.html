@@ -103,68 +103,13 @@
               this page won't remember them for you.</strong
             >
           </p>
-          <button class="linklike" id="showLogin" type="button">
-            Already have a codename? Sign back in
-          </button>
-          <div id="loginView" style="display: none; margin-top: 14px">
-            <div class="field-row">
-              <div class="field">
-                <label for="codenameLogin">Codename</label>
-                <input
-                  type="text"
-                  id="codenameLogin"
-                  autocomplete="off"
-                  placeholder="humble dove"
-                />
-              </div>
-              <div class="field">
-                <label for="pinLogin">PIN</label>
-                <input
-                  type="password"
-                  id="pinLogin"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  maxlength="8"
-                  placeholder="••••"
-                />
-              </div>
-              <button class="btn primary" id="loginBtn" type="button">
-                Sign in
-              </button>
-            </div>
-          </div>
-          <button class="linklike" id="showRecovery" type="button" style="margin-top: 6px; color: var(--ink-soft)">
-            Forgot your codename or PIN?
-          </button>
-          <div id="recoveryView" style="display: none; margin-top: 14px">
-            <div class="field-row">
-              <div class="field">
-                <label for="recoveryKeyInput">Recovery key</label>
-                <input
-                  type="text"
-                  id="recoveryKeyInput"
-                  autocomplete="off"
-                  placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-                  style="font-family: 'Courier New', monospace; letter-spacing: 0.06em"
-                />
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label for="recoveryNewPin">New PIN (4–8 digits)</label>
-                <input
-                  type="password"
-                  id="recoveryNewPin"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  maxlength="8"
-                  placeholder="••••"
-                />
-              </div>
-              <button class="btn primary" id="recoverySubmitBtn" type="button">
-                Recover
-              </button>
-            </div>
+          <div class="claim-links">
+            <button class="linklike" id="showLogin" type="button">
+              Already have a codename? Sign back in
+            </button>
+            <button class="linklike" id="showRecovery" type="button" style="color: var(--ink-soft)">
+              Forgot your codename or PIN?
+            </button>
           </div>
 
           <p class="msg" id="claimMsg"></p>
@@ -191,7 +136,7 @@
             type="button"
             style="margin-right: 16px"
           >
-            → Next step
+            Current Read
           </button>
           <button
             class="linklike"
@@ -293,6 +238,81 @@
               Confirm
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- sign in modal -->
+    <div
+      id="signInModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="signInTitle"
+      hidden
+    >
+      <div class="modal-card">
+        <button class="modal-close" id="signInClose" type="button" aria-label="Close">✕</button>
+        <div class="modal-head">
+          <div class="modal-eyebrow">Welcome back</div>
+          <div class="dt-label" id="signInTitle">Sign back in</div>
+        </div>
+        <div class="confirm-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="codenameLogin">Codename</label>
+              <input type="text" id="codenameLogin" autocomplete="off" placeholder="humble dove" />
+            </div>
+            <div class="field">
+              <label for="pinLogin">PIN</label>
+              <input type="password" id="pinLogin" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" />
+            </div>
+          </div>
+          <div class="confirm-actions">
+            <button class="btn" id="signInCancel" type="button">Cancel</button>
+            <button class="btn primary" id="loginBtn" type="button">Sign in</button>
+          </div>
+          <p class="msg" id="loginMsg"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- account recovery modal -->
+    <div
+      id="accountRecoveryModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="accountRecoveryTitle"
+      hidden
+    >
+      <div class="modal-card">
+        <button class="modal-close" id="accountRecoveryClose" type="button" aria-label="Close">✕</button>
+        <div class="modal-head">
+          <div class="modal-eyebrow">Account recovery</div>
+          <div class="dt-label" id="accountRecoveryTitle">Forgot your codename or PIN?</div>
+        </div>
+        <div class="confirm-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="recoveryKeyInput">Recovery key</label>
+              <input
+                type="text"
+                id="recoveryKeyInput"
+                autocomplete="off"
+                placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                style="font-family: 'Courier New', monospace; letter-spacing: 0.06em"
+              />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="recoveryNewPin">New PIN (4–8 digits)</label>
+              <input type="password" id="recoveryNewPin" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" />
+            </div>
+            <button class="btn primary" id="recoverySubmitBtn" type="button">Recover</button>
+          </div>
+          <p class="msg" id="recoveryMsg"></p>
         </div>
       </div>
     </div>

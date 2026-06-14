@@ -2,8 +2,7 @@
    CONFIG — paste your Apps Script web app URL between the quotes.
    Example: "https://script.google.com/macros/s/AKfy.../exec"
    ================================================================ */
-const SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbylNKVDO56Vrew4TffammlA9GkxmoBq_7Ktx7U60PlLk6oAgwRbxrXw5Gt_bogTrVVZqQ/exec';
+const SCRIPT_URL = 'https://cool-cloud-1221.ash250918.workers.dev';
 
 /* The name shown on the keeper row (fed by the AdminDone column). */
 const ADMIN_NAME = 'Keeper';
@@ -506,26 +505,81 @@ $('claimBtn').onclick = async () => {
   refreshClaimBtn();
 };
 
-$('showRecovery').onclick = () => {
-  const v = $('recoveryView');
-  v.style.display = v.style.display === 'none' ? 'block' : 'none';
+/* ---------------- sign-in modal ---------------- */
+function openSignInModal() {
+  $('signInModal').hidden = false;
+  animateModal($('signInModal'));
+  document.documentElement.style.overflow = 'hidden';
+  $('codenameLogin').focus();
+}
+function closeSignInModal() {
+  $('signInModal').hidden = true;
+  document.documentElement.style.overflow = '';
+  setMsg($('loginMsg'), '', '');
+}
+$('showLogin').onclick = openSignInModal;
+$('signInCancel').onclick = closeSignInModal;
+$('signInClose').onclick = closeSignInModal;
+$('signInModal').onclick = (e) => { if (e.target === $('signInModal')) closeSignInModal(); };
+
+$('loginBtn').onclick = async () => {
+  setMsg($('loginMsg'), '', '');
+  const codename = norm($('codenameLogin').value);
+  const pin = $('pinLogin').value;
+  if (!codename || !/^\d{4,8}$/.test(pin)) {
+    setMsg($('loginMsg'), 'Enter your codename and 4–8 digit PIN.', 'err');
+    return;
+  }
+  $('loginBtn').disabled = true;
+  const res = await apiGet();
+  $('loginBtn').disabled = false;
+  if (!res || !res.ok) {
+    setMsg($('loginMsg'), "Couldn't reach the board. Try again.", 'err');
+    return;
+  }
+  data = res;
+  if (!data.codenames.map(norm).includes(codename)) {
+    setMsg($('loginMsg'), "That codename isn't on the books.", 'err');
+    return;
+  }
+  closeSignInModal();
+  startSession(codename, pin);
+  jumpToNextStep({ silent: true });
 };
+
+/* ---------------- account recovery modal ---------------- */
+function openAccountRecoveryModal() {
+  $('accountRecoveryModal').hidden = false;
+  animateModal($('accountRecoveryModal'));
+  document.documentElement.style.overflow = 'hidden';
+  $('recoveryKeyInput').focus();
+}
+function closeAccountRecoveryModal() {
+  $('accountRecoveryModal').hidden = true;
+  document.documentElement.style.overflow = '';
+  setMsg($('recoveryMsg'), '', '');
+}
+$('showRecovery').onclick = openAccountRecoveryModal;
+$('accountRecoveryClose').onclick = closeAccountRecoveryModal;
+$('accountRecoveryModal').onclick = (e) => { if (e.target === $('accountRecoveryModal')) closeAccountRecoveryModal(); };
+
 $('recoverySubmitBtn').onclick = async () => {
-  setMsg($('claimMsg'), '', '');
+  setMsg($('recoveryMsg'), '', '');
   const key = $('recoveryKeyInput').value.trim();
   const newPin = $('recoveryNewPin').value;
   if (!key) {
-    setMsg($('claimMsg'), 'Paste your recovery key.', 'err');
+    setMsg($('recoveryMsg'), 'Paste your recovery key.', 'err');
     return;
   }
   if (!/^\d{4,8}$/.test(newPin)) {
-    setMsg($('claimMsg'), 'Enter a new PIN (4–8 digits).', 'err');
+    setMsg($('recoveryMsg'), 'Enter a new PIN (4–8 digits).', 'err');
     return;
   }
   $('recoverySubmitBtn').disabled = true;
   const res = await apiPost({ action: 'recover', key, newPin });
   if (res.ok) {
-    setMsg($('claimMsg'), 'Recovery complete!', 'ok');
+    setMsg($('recoveryMsg'), 'Recovery complete!', 'ok');
+    closeAccountRecoveryModal();
     $('claimView').style.display = 'none';
     $('restoringView').style.display = 'flex';
     const board = await apiGet();
@@ -536,36 +590,8 @@ $('recoverySubmitBtn').onclick = async () => {
     showToast('Welcome back — PIN updated', 'ok');
   } else {
     $('recoverySubmitBtn').disabled = false;
-    setMsg($('claimMsg'), res.error || 'Recovery failed.', 'err');
+    setMsg($('recoveryMsg'), res.error || 'Recovery failed.', 'err');
   }
-};
-
-$('showLogin').onclick = () => {
-  const v = $('loginView');
-  v.style.display = v.style.display === 'none' ? 'block' : 'none';
-};
-$('loginBtn').onclick = async () => {
-  setMsg($('claimMsg'), '', '');
-  const codename = norm($('codenameLogin').value);
-  const pin = $('pinLogin').value;
-  if (!codename || !/^\d{4,8}$/.test(pin)) {
-    setMsg($('claimMsg'), 'Enter your codename and 4–8 digit PIN.', 'err');
-    return;
-  }
-  $('loginBtn').disabled = true;
-  const res = await apiGet();
-  $('loginBtn').disabled = false;
-  if (!res || !res.ok) {
-    setMsg($('claimMsg'), "Couldn't reach the board. Try again.", 'err');
-    return;
-  }
-  data = res;
-  if (!data.codenames.map(norm).includes(codename)) {
-    setMsg($('claimMsg'), "That codename isn't on the books.", 'err');
-    return;
-  }
-  startSession(codename, pin);
-  jumpToNextStep({ silent: true });
 };
 
 function startSession(codename, pin, recoveryKey) {
@@ -590,12 +616,21 @@ function startSession(codename, pin, recoveryKey) {
 $('signOutBtn').onclick = () => {
   session = null;
   clearStoredSession();
-  data = { tasks: [], codenames: [], board: [] }; // board data leaves memory
+  data = { tasks: [], codenames: [], board: [] };
   $('sessionView').style.display = 'none';
   $('restoringView').style.display = 'none';
   $('claimView').style.display = 'block';
   showSignedIn(false);
   setMsg($('gridMsg'), '', '');
+  setMsg($('claimMsg'), '', '');
+  // Reset all form fields so stale state isn't visible on re-open
+  $('pinClaim').value = '';
+  $('codenameLogin').value = '';
+  $('pinLogin').value = '';
+  $('recoveryKeyInput').value = '';
+  $('recoveryNewPin').value = '';
+  $('recoverySubmitBtn').disabled = false;
+  refreshClaimBtn();
   fetchCount();
 };
 
@@ -691,11 +726,9 @@ function patchCell(taskId) {
   btn.setAttribute('aria-pressed', String(done));
   const t = data.tasks.find((x) => x.id === taskId);
   btn.setAttribute('aria-label', `${done ? 'Done' : 'Mark done'}: ${t ? t.label : taskId}`);
-  btn.innerHTML = isPending
-    ? "<span class='spinner' aria-hidden='true'></span>"
-    : done
-      ? "<span class='check'>✓</span>"
-      : "<span class='box'>＋</span>";
+  btn.innerHTML = done
+    ? "<span class='check'>✓</span>"
+    : "<span class='box'>＋</span>";
 
   // Update this row's steps chip.
   const k = data.tasks.length;
@@ -775,6 +808,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (!$('modal').hidden) closeModal();
   else if (!$('confirmModal').hidden) closeConfirm();
+  else if (!$('signInModal').hidden) closeSignInModal();
+  else if (!$('accountRecoveryModal').hidden) closeAccountRecoveryModal();
   // recoveryModal is intentionally NOT closeable via Escape
 });
 
