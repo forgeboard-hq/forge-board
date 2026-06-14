@@ -1161,13 +1161,13 @@ table.grid {
 .session-btn {
   background: var(--bg);
   border-color: var(--line);
-  color: var(--ink);
+  color: var(--accent);
 }
 .session-btn--danger {
   color: var(--danger);
   /* border-color: var(--danger); */
 }
 .session-btn--muted {
-  color: var(--accent);
+  color: var(--ink);
   /* border-color: var(--accent); */
 }

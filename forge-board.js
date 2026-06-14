@@ -4,7 +4,7 @@
    ================================================================ */
 const SCRIPT_URL = 'https://cool-cloud-1221.ash250918.workers.dev';
 /* The name shown on the keeper row (fed by the AdminDone column). */
-const ADMIN_NAME = 'Keeper';
+const ADMIN_NAME = 'The Keeper';
 
 /* ---------------- wordlists for the dice ---------------- */
 const ADJ = [
