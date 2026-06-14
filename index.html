@@ -133,6 +133,40 @@
               </button>
             </div>
           </div>
+          <button class="linklike" id="showRecovery" type="button" style="margin-top: 6px; color: var(--ink-soft)">
+            Forgot your codename or PIN?
+          </button>
+          <div id="recoveryView" style="display: none; margin-top: 14px">
+            <div class="field-row">
+              <div class="field">
+                <label for="recoveryKeyInput">Recovery key</label>
+                <input
+                  type="text"
+                  id="recoveryKeyInput"
+                  autocomplete="off"
+                  placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                  style="font-family: 'Courier New', monospace; letter-spacing: 0.06em"
+                />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="recoveryNewPin">New PIN (4–8 digits)</label>
+                <input
+                  type="password"
+                  id="recoveryNewPin"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  maxlength="8"
+                  placeholder="••••"
+                />
+              </div>
+              <button class="btn primary" id="recoverySubmitBtn" type="button">
+                Recover
+              </button>
+            </div>
+          </div>
+
           <p class="msg" id="claimMsg"></p>
         </div>
 
@@ -151,6 +185,14 @@
             You're in. Your row sits at the top of the board — tap the steps in
             <strong>your</strong> row as you complete them.
           </p>
+          <button
+            class="linklike"
+            id="nextStepBtn"
+            type="button"
+            style="margin-right: 16px"
+          >
+            → Next step
+          </button>
           <button
             class="linklike"
             id="clearBtn"
@@ -251,6 +293,43 @@
               Confirm
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- recovery key modal -->
+    <div
+      id="recoveryModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="recoveryTitle"
+      hidden
+    >
+      <div class="modal-card recovery-card">
+        <div class="modal-head">
+          <div class="modal-eyebrow recovery-eyebrow">Important — Read carefully</div>
+          <div class="dt-label" id="recoveryTitle">Save your Recovery Key</div>
+        </div>
+        <div class="recovery-body">
+          <p class="recovery-warning">
+            This key can restore your codename or reset your PIN if you ever lose them.
+            <strong>It will never be shown again.</strong> Write it down somewhere safe before you close this.
+          </p>
+          <div class="recovery-key-wrap">
+            <span id="recoveryKeyText" class="recovery-key"></span>
+          </div>
+          <div class="recovery-btn-row">
+            <button class="btn" id="copyKeyBtn" type="button">Copy key</button>
+            <button class="btn" id="downloadKeyBtn" type="button">⬇ Download secret.txt</button>
+          </div>
+          <label class="recovery-ack-label">
+            <input type="checkbox" id="recoveryAckCheck" />
+            <span>I have written this down and understand it cannot be retrieved again</span>
+          </label>
+          <button class="btn primary" id="recoveryCloseBtn" type="button" disabled>
+            Close
+          </button>
         </div>
       </div>
     </div>
