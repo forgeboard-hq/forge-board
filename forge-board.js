@@ -372,9 +372,14 @@ function renderGate(n) {
 }
 
 /* ---------------- API ---------------- */
-async function apiGet() {
+async function apiGet(params) {
   if (demoMode) return demoData();
-  const res = await fetch(SCRIPT_URL);
+  let url = SCRIPT_URL;
+  if (params) {
+    const sep = url.includes('?') ? '&' : '?';
+    url += sep + new URLSearchParams(params).toString();
+  }
+  const res = await fetch(url);
   return res.json();
 }
 async function apiCount() {
@@ -1049,9 +1054,9 @@ function init() {
     $('restoringView').style.display = 'flex';
     $('gateScreen').style.display = 'none';
     $('boardSection').style.display = 'none';
-    apiGet()
+    apiGet({ codename: stored.codename })
       .then((res) => {
-        if (!res || !res.ok) throw new Error();
+        if (!res || !res.ok) throw new Error(res.error || '');
         data = res;
         startSession(stored.codename, stored.pin);
         jumpToNextStep({ silent: true });
@@ -1059,10 +1064,14 @@ function init() {
           openRecoveryModal(stored.key);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        clearStoredSession();
         $('restoringView').style.display = 'none';
         $('claimView').style.display = 'block';
         showSignedIn(false);
+        if (err && err.message === 'account_removed') {
+          setMsg($('claimMsg'), 'Account does not exist. Kindly create a new one.', 'err');
+        }
         fetchCount();
       });
   } else {
