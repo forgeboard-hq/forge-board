@@ -3,7 +3,6 @@
    Example: "https://script.google.com/macros/s/AKfy.../exec"
    ================================================================ */
 const SCRIPT_URL = 'https://cool-cloud-1221.ash250918.workers.dev';
-
 /* The name shown on the keeper row (fed by the AdminDone column). */
 const ADMIN_NAME = 'Keeper';
 
@@ -663,13 +662,7 @@ function sectionColor(section) {
 }
 function orderedTasks() {
   if (!sortSection) return data.tasks;
-  const match = data.tasks.filter(
-    (t) => (t.section || '').trim() === sortSection
-  );
-  const rest = data.tasks.filter(
-    (t) => (t.section || '').trim() !== sortSection
-  );
-  return match.concat(rest);
+  return data.tasks.filter((t) => (t.section || '').trim() === sortSection);
 }
 function renderSortControl() {
   const sections = uniqueSections();
