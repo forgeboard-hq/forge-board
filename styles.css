@@ -155,6 +155,20 @@ h1 {
   color: var(--ink-soft);
   font-weight: 400;
 }
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--accent);
+  border-radius: 1px;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: twBlink 0.75s step-end infinite;
+}
+@keyframes twBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
 
 .btn {
   border: 1px solid var(--line);
@@ -195,6 +209,17 @@ h1 {
 }
 .btn.danger:hover:not(:disabled) {
   filter: brightness(1.06);
+}
+.btn.amber {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #fff;
+}
+[data-theme='dark'] .btn.amber {
+  color: #0c1512;
+}
+.btn.amber:hover:not(:disabled) {
+  filter: brightness(1.08);
 }
 .confirm-body {
   flex: 1 1 auto;
@@ -260,6 +285,39 @@ input:focus,
   color: var(--ink);
   margin-top: 10px;
 }
+/* ---------- initial visibility states ---------- */
+#restoringView {
+  display: none;
+  align-items: center;
+  gap: 11px;
+  padding: 4px 0;
+}
+#sessionView  { display: none; }
+#keeperGif    { display: none; }
+#gateScreen   { display: none; }
+#boardSection { display: none; }
+#sortControl  { display: none; }
+#apBulkBar    { display: none; }
+#apCancelEdit { display: none; }
+
+/* ---------- form helpers ---------- */
+#recoveryKeyInput {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.06em;
+}
+#showRecovery { color: var(--ink-soft); }
+.label-sub {
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.hint--mb { margin-bottom: 12px; }
+
+/* ---------- button spinner ---------- */
+.spinner.btn-spinner {
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
 .hp-field {
   position: absolute;
   left: -9999px;
@@ -267,6 +325,17 @@ input:focus,
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .msg {
   font-size: 0.85rem;

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Knowing God</title>
+    <link rel="icon" href="./assets/forge.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,12 +31,9 @@
 
       <!-- ===== identity ===== -->
       <section class="panel" id="identityPanel">
-        <h2 id="identityHeading">Claim your codename</h2>
+        <h2 id="identityHeading">Claim your username</h2>
 
-        <div
-          id="restoringView"
-          style="display: none; align-items: center; gap: 11px; padding: 4px 0"
-        >
+        <div id="restoringView">
           <span class="spinner"></span>
           <span
             style="
@@ -60,16 +58,15 @@
             />
           </div>
           <div class="dice-row">
-            <div id="codenameDisplay" class="empty">draw your codename →</div>
-            <button class="btn" id="rollBtn" type="button">Draw at Random</button>
+            <div id="codenameDisplay" class="empty" aria-label="Username preview"></div>
+            <span id="codenameAnnounce" class="sr-only" aria-live="polite" aria-atomic="true"></span>
+            <button class="btn primary" id="rollBtn" type="button">Randomise</button>
           </div>
           <div class="field-row">
             <div class="field">
               <label for="nameClaim"
                 >Your name
-                <span style="color: var(--ink-soft); font-weight: 400"
-                  >(only visible to the keeper)</span
-                ></label
+                <span class="label-sub">(only visible to the keeper)</span></label
               >
               <input
                 type="text"
@@ -99,23 +96,23 @@
           <p class="hint">
             
             <strong
-              >Save your CODENAME and PIN to sign back in any time.</strong
+              >Save your USERNAME and PIN to sign back in any time.</strong
             >
           </p>
           <div class="claim-links">
             <button class="linklike" id="showLogin" type="button">
               Already walking with us? Sign back in
             </button>
-            <button class="linklike" id="showRecovery" type="button" style="color: var(--ink-soft)">
-              Lost your Codename or PIN?
+            <button class="linklike" id="showRecovery" type="button">
+              Lost your USERNAME or PIN?
             </button>
           </div>
 
           <p class="msg" id="claimMsg"></p>
         </div>
 
-        <div id="sessionView" style="display: none">
-          <img id="keeperGif" src="./assets/jesus.gif" alt="" class="keeper-gif-panel" style="display:none" />
+        <div id="sessionView">
+          <img id="keeperGif" alt="" class="keeper-gif-panel" />
           <div class="session-badge"><span id="sessionName"></span></div>
           <div class="prog">
             <div class="prog-track">
@@ -134,26 +131,23 @@
         </div>
       </section>
 
-      <!-- ===== admin panel (keeper only) ===== -->
-      <section class="panel" id="adminPanel" style="display:none"></section>
-
       <!-- ===== gate (shown until signed in) ===== -->
-      <section id="gateScreen" class="gate" style="display: none">
+      <section id="gateScreen" class="gate">
         <div class="gate-card">
           <p class="gate-eyebrow">JOIN THE</p>
           <div class="gate-count" id="gateCount">—</div>
           <p class="gate-line" id="gateLine">Gathering the disciples…</p>
           <p class="gate-sub">
-            Claim a CODENAME above and set a PIN to join them
+            Claim a USERNAME above and set a PIN to join them
           </p>
         </div>
       </section>
 
       <!-- ===== board ===== -->
-      <section id="boardSection" style="display: none">
+      <section id="boardSection">
         <div class="board-head">
           <h2>THE BOARD</h2>
-          <div id="sortControl" class="sort-control" style="display: none">
+          <div id="sortControl" class="sort-control">
             <label for="sortSelect">Section</label>
             <select id="sortSelect"></select>
           </div>
@@ -238,7 +232,7 @@
         <div class="confirm-body">
           <div class="field-row">
             <div class="field">
-              <label for="codenameLogin">Codename</label>
+              <label for="codenameLogin">Username</label>
               <input type="text" id="codenameLogin" autocomplete="off" placeholder="humble dove" />
             </div>
             <div class="field">
@@ -268,7 +262,7 @@
         <button class="modal-close" id="accountRecoveryClose" type="button" aria-label="Close">✕</button>
         <div class="modal-head">
           <div class="modal-eyebrow">Account recovery</div>
-          <div class="dt-label" id="accountRecoveryTitle">Lost your CODENAME or PIN?</div>
+          <div class="dt-label" id="accountRecoveryTitle">Lost your USERNAME or PIN?</div>
         </div>
         <div class="confirm-body">
           <div class="field-row">
@@ -279,7 +273,6 @@
                 id="recoveryKeyInput"
                 autocomplete="off"
                 placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-                style="font-family: 'Courier New', monospace; letter-spacing: 0.06em"
               />
             </div>
           </div>
@@ -312,14 +305,14 @@
         <div class="recovery-body">
           <p class="recovery-warning">
             The key is the
-            <strong>only way back in</strong> if you lose your CODENAME or PIN. It will not be shown again.
+            <strong>only way back in</strong> if you lose your USERNAME or PIN. It will not be shown again.
           </p>
           <div class="recovery-key-wrap">
             <span id="recoveryKeyText" class="recovery-key"></span>
           </div>
           <div class="recovery-btn-row">
             <button class="btn" id="copyKeyBtn" type="button">Copy key</button>
-            <button class="btn" id="downloadKeyBtn" type="button">Download secret.txt</button>
+            <button class="btn amber" id="downloadKeyBtn" type="button">Download key</button>
           </div>
           <label class="recovery-ack-label">
             <input type="checkbox" id="recoveryAckCheck" />

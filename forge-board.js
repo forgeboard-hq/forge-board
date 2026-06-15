@@ -161,11 +161,14 @@ async function fetchCount() {
   }
 }
 function renderGate(n) {
+  const eyebrow = document.querySelector('.gate-eyebrow');
   if (n === null || n === undefined) {
+    if (eyebrow) eyebrow.style.display = 'none';
     $('gateCount').style.display = 'none';
     $('gateLine').textContent = 'Gathering the disciples…';
     return;
   }
+  if (eyebrow) eyebrow.style.display = '';
   if (n <= 0) {
     $('gateCount').style.display = 'none';
     $('gateLine').textContent = 'Be the first to set out.';
@@ -180,36 +183,51 @@ function renderGate(n) {
 }
 
 /* ---------------- API ---------------- */
+const NETWORK_ERR = { ok: false, error: 'network' };
+
+function apiError(btn, origHTML) {
+  if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+  showToast('Something went wrong. Please try again.', 'err', { duration: 3200 });
+}
+
 async function apiGet(params) {
   if (demoMode) return demoData();
-  let url = SCRIPT_URL;
-  if (params) {
-    const sep = url.includes('?') ? '&' : '?';
-    url += sep + new URLSearchParams(params).toString();
-  }
-  const res = await fetch(url);
-  return res.json();
+  try {
+    let url = SCRIPT_URL;
+    if (params) {
+      const sep = url.includes('?') ? '&' : '?';
+      url += sep + new URLSearchParams(params).toString();
+    }
+    const res = await fetch(url);
+    return res.json();
+  } catch (e) { return NETWORK_ERR; }
 }
 async function apiCount() {
   if (demoMode) return { ok: true, count: 3 };
-  const sep = SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?';
-  const res = await fetch(SCRIPT_URL + sep + 'count=1');
-  return res.json();
+  try {
+    const sep = SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?';
+    const res = await fetch(SCRIPT_URL + sep + 'count=1');
+    return res.json();
+  } catch (e) { return NETWORK_ERR; }
 }
 async function apiPost(payload) {
   // In demo mode, pretend writes succeed so the full flow is previewable.
   if (demoMode) return { ok: true, codename: payload.codename };
+  try {
   const res = await fetch(SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // no preflight
     body: JSON.stringify(payload),
   });
   return res.json();
+  } catch (e) { return NETWORK_ERR; }
 }
 
 /* ---------------- dice ---------------- */
 const GLYPHS = 'abcdefghijklmnopqrstuvwxyz';
 function rollCodename() {
+  clearTypewriter();
+  $('codenameDisplay').innerHTML = '';
   const taken = new Set(data.codenames.map(norm));
   let name = '';
   for (let i = 0; i < 80; i++) {
@@ -246,9 +264,81 @@ function shuffleInto(el, finalText) {
     if (frame >= total) {
       clearInterval(tick);
       el.textContent = finalText;
+      $('codenameAnnounce').textContent = finalText;
     }
   }, 35);
 }
+
+/* ---------------- typewriter placeholder ---------------- */
+let twTimers = [];
+function clearTypewriter() {
+  twTimers.forEach((id) => { clearInterval(id); clearTimeout(id); });
+  twTimers = [];
+}
+
+function typewriterPlaceholder() {
+  clearTypewriter();
+  const el = $('codenameDisplay');
+  el.classList.remove('empty');
+  el.innerHTML = '';
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = 'draw your username';
+    return;
+  }
+
+  const textSpan = document.createElement('span');
+  const cursor = document.createElement('span');
+  cursor.className = 'tw-cursor';
+  el.appendChild(textSpan);
+  el.appendChild(cursor);
+
+  const phrase = 'draw your username';
+
+  const namePool = Array.from({ length: 5 }, () =>
+    ADJ[Math.floor(Math.random() * ADJ.length)] +
+    ' ' +
+    NOUN[Math.floor(Math.random() * NOUN.length)]
+  );
+  let nameIndex = 0;
+  function nextName() {
+    const name = namePool[nameIndex];
+    nameIndex = (nameIndex + 1) % namePool.length;
+    return name;
+  }
+
+  function type(text, speed, reverse, pause, onDone) {
+    let i = reverse ? text.length : 0;
+    const id = setInterval(() => {
+      i += reverse ? -1 : 1;
+      textSpan.textContent = text.slice(0, i);
+      const done = reverse ? i <= 0 : i >= text.length;
+      if (done) {
+        clearInterval(id);
+        twTimers = twTimers.filter((x) => x !== id);
+        if (onDone) {
+          const tid = setTimeout(onDone, pause);
+          twTimers.push(tid);
+        }
+      }
+    }, speed);
+    twTimers.push(id);
+  }
+
+  function loop() {
+    type(phrase, 70, false, 900, () =>
+      type(phrase, 75, true, 200, () => {
+        const name = nextName();
+        type(name, 80, false, 1000, () =>
+          type(name, 75, true, 250, loop)
+        );
+      })
+    );
+  }
+
+  loop();
+}
+setTimeout(typewriterPlaceholder, 400);
 
 /* ---------------- claim / login / session ---------------- */
 function refreshClaimBtn() {
@@ -268,7 +358,10 @@ $('claimBtn').onclick = async () => {
     setMsg($('claimMsg'), 'Please add your name first.', 'err');
     return;
   }
-  $('claimBtn').disabled = true;
+  const claimBtn = $('claimBtn');
+  claimBtn.disabled = true;
+  const origClaimText = claimBtn.textContent;
+  claimBtn.innerHTML = "<span class='spinner sm btn-spinner'></span>Joining…";
 
   // B: codenames aren't fetched until sign-in (the gate only pulls a count),
   // so re-check the live roster the moment Claim is tapped. If someone grabbed
@@ -283,7 +376,7 @@ $('claimBtn').onclick = async () => {
         rollCodename(); // re-rolls using the refreshed roster
         setMsg(
           $('claimMsg'),
-          "That codename was just taken — here's a fresh one. Tap Claim again.",
+          "That username was just taken — here's a fresh one. Tap Claim again.",
           'err'
         );
         refreshClaimBtn();
@@ -304,10 +397,12 @@ $('claimBtn').onclick = async () => {
   if (res.ok) {
     const regKey = res.key || null;
     startSession(res.codename || candidate, $('pinClaim').value, regKey);
+    if (regKey) openRecoveryModal(regKey);
     await fetchBoard();
     jumpToNextStep({ silent: true });
-    if (regKey) openRecoveryModal(regKey);
   } else {
+    if (res.error === 'network') { apiError(claimBtn, origClaimText); return; }
+    claimBtn.textContent = origClaimText;
     setMsg($('claimMsg'), res.error || 'Something went wrong.', 'err');
     if (/claimed/i.test(res.error || '')) rollCodename();
   }
@@ -315,7 +410,9 @@ $('claimBtn').onclick = async () => {
 };
 
 /* ---------------- sign-in modal ---------------- */
+let _signInTrigger = null;
 function openSignInModal() {
+  _signInTrigger = document.activeElement;
   $('signInModal').hidden = false;
   animateModal($('signInModal'));
   document.documentElement.style.overflow = 'hidden';
@@ -325,10 +422,14 @@ function closeSignInModal() {
   $('signInModal').hidden = true;
   document.documentElement.style.overflow = '';
   setMsg($('loginMsg'), '', '');
+  if (_signInTrigger) { _signInTrigger.focus(); _signInTrigger = null; }
 }
 $('showLogin').onclick = openSignInModal;
 $('signInCancel').onclick = closeSignInModal;
 $('signInClose').onclick = closeSignInModal;
+$('pinLogin').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('loginBtn').click();
+});
 $('signInModal').onclick = (e) => { if (e.target === $('signInModal')) closeSignInModal(); };
 
 $('loginBtn').onclick = async () => {
@@ -336,16 +437,23 @@ $('loginBtn').onclick = async () => {
   const codename = norm($('codenameLogin').value);
   const pin = $('pinLogin').value;
   if (!codename || !pin) {
-    setMsg($('loginMsg'), 'Enter your codename and PIN.', 'err');
+    setMsg($('loginMsg'), 'Enter your username and PIN.', 'err');
     return;
   }
-  $('loginBtn').disabled = true;
+  const loginBtn = $('loginBtn');
+  const origLoginText = loginBtn.textContent;
+  loginBtn.disabled = true;
+  loginBtn.innerHTML = "<span class='spinner sm btn-spinner'></span>Signing in…";
 
   // Keeper login — separate auth path, no Users sheet involved.
   if (codename === norm(ADMIN_NAME)) {
     const res = await apiPost({ action: 'keeperLogin', pin });
-    $('loginBtn').disabled = false;
-    if (!res.ok) { setMsg($('loginMsg'), res.error || 'Wrong PIN.', 'err'); return; }
+    loginBtn.disabled = false;
+    loginBtn.textContent = origLoginText;
+    if (!res.ok) {
+      if (res.error === 'network') { apiError(loginBtn, origLoginText); return; }
+      setMsg($('loginMsg'), res.error || 'Wrong PIN.', 'err'); return;
+    }
     const board = await apiGet();
     if (board && board.ok) data = board;
     closeSignInModal();
@@ -355,19 +463,22 @@ $('loginBtn').onclick = async () => {
 
   // Regular user login.
   if (!/^\d{4,8}$/.test(pin)) {
-    $('loginBtn').disabled = false;
-    setMsg($('loginMsg'), 'Enter your codename and 4–8 digit PIN.', 'err');
+    loginBtn.disabled = false;
+    loginBtn.textContent = origLoginText;
+    setMsg($('loginMsg'), 'Enter your username and 4–8 digit PIN.', 'err');
     return;
   }
   const res = await apiGet();
-  $('loginBtn').disabled = false;
+  loginBtn.disabled = false;
+  loginBtn.textContent = origLoginText;
   if (!res || !res.ok) {
+    if (res && res.error === 'network') { apiError(loginBtn, origLoginText); return; }
     setMsg($('loginMsg'), "Couldn't reach the board. Try again.", 'err');
     return;
   }
   data = res;
   if (!data.codenames.map(norm).includes(codename)) {
-    setMsg($('loginMsg'), "That codename isn't on the books.", 'err');
+    setMsg($('loginMsg'), "That username isn't on the books.", 'err');
     return;
   }
   closeSignInModal();
@@ -376,7 +487,9 @@ $('loginBtn').onclick = async () => {
 };
 
 /* ---------------- account recovery modal ---------------- */
+let _recoveryTrigger = null;
 function openAccountRecoveryModal() {
+  _recoveryTrigger = document.activeElement;
   $('accountRecoveryModal').hidden = false;
   animateModal($('accountRecoveryModal'));
   document.documentElement.style.overflow = 'hidden';
@@ -386,9 +499,13 @@ function closeAccountRecoveryModal() {
   $('accountRecoveryModal').hidden = true;
   document.documentElement.style.overflow = '';
   setMsg($('recoveryMsg'), '', '');
+  if (_recoveryTrigger) { _recoveryTrigger.focus(); _recoveryTrigger = null; }
 }
 $('showRecovery').onclick = openAccountRecoveryModal;
 $('accountRecoveryClose').onclick = closeAccountRecoveryModal;
+$('recoveryNewPin').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('recoverySubmitBtn').click();
+});
 $('accountRecoveryModal').onclick = (e) => { if (e.target === $('accountRecoveryModal')) closeAccountRecoveryModal(); };
 
 $('recoverySubmitBtn').onclick = async () => {
@@ -403,7 +520,10 @@ $('recoverySubmitBtn').onclick = async () => {
     setMsg($('recoveryMsg'), 'Enter a new PIN (4–8 digits).', 'err');
     return;
   }
-  $('recoverySubmitBtn').disabled = true;
+  const recoveryBtn = $('recoverySubmitBtn');
+  const origRecoveryText = recoveryBtn.textContent;
+  recoveryBtn.disabled = true;
+  recoveryBtn.innerHTML = "<span class='spinner sm btn-spinner'></span>Restoring…";
   const res = await apiPost({ action: 'recover', key, newPin });
   if (res.ok) {
     setMsg($('recoveryMsg'), 'Recovery complete!', 'ok');
@@ -417,7 +537,9 @@ $('recoverySubmitBtn').onclick = async () => {
     jumpToNextStep({ silent: true });
     showToast('Welcome back — PIN updated', 'ok');
   } else {
-    $('recoverySubmitBtn').disabled = false;
+    if (res.error === 'network') { apiError(recoveryBtn, origRecoveryText); return; }
+    recoveryBtn.disabled = false;
+    recoveryBtn.textContent = origRecoveryText;
     setMsg($('recoveryMsg'), res.error || 'Recovery failed.', 'err');
   }
 };
@@ -439,19 +561,32 @@ function startSession(codename, pin, recoveryKey, isAdmin) {
   $('restoringView').style.display = 'none';
   $('claimView').style.display = 'none';
   $('sessionView').style.display = 'block';
-  $('adminPanel').style.display = session.isAdmin ? 'block' : 'none';
-  $('keeperGif').style.display = session.isAdmin ? 'block' : 'none';
+  const gifEl = $('keeperGif');
+  if (session.isAdmin) {
+    if (!gifEl.src) gifEl.src = './assets/jesus.gif';
+    gifEl.style.display = 'block';
+  } else {
+    gifEl.style.display = 'none';
+  }
   $('nextStepBtn').style.display = session.isAdmin ? 'none' : '';
   $('clearBtn').style.display = session.isAdmin ? 'none' : '';
   showSignedIn(true);
   renderBoard();
-  if (session.isAdmin) renderAdminPanel();
+  if (session.isAdmin) {
+    if (!$('adminPanel')) {
+      const ap = document.createElement('section');
+      ap.className = 'panel';
+      ap.id = 'adminPanel';
+      $('identityPanel').insertAdjacentElement('afterend', ap);
+    }
+    renderAdminPanel();
+  }
 }
 $('signOutBtn').onclick = () => {
   openConfirm({
     eyebrow: 'Sign out',
-    title: 'Sign out?',
-    message: 'Your codename and PIN stay safe — just sign back in to continue.',
+    title: 'Want to sign out?',
+    message: 'Sign back in with your USERNAME and PIN anytime.',
     okText: 'Sign out',
     onConfirm: doSignOut,
   });
@@ -463,9 +598,10 @@ function doSignOut() {
   $('sessionView').style.display = 'none';
   $('restoringView').style.display = 'none';
   $('claimView').style.display = 'block';
-  $('adminPanel').style.display = 'none';
+  const ap = $('adminPanel');
+  if (ap) ap.remove();
   $('keeperGif').style.display = 'none';
-  $('identityHeading').textContent = 'Claim your codename';
+  $('identityHeading').textContent = 'Claim your username';
   showSignedIn(false);
   setMsg($('gridMsg'), '', '');
   setMsg($('claimMsg'), '', '');
@@ -475,6 +611,8 @@ function doSignOut() {
   $('recoveryKeyInput').value = '';
   $('recoveryNewPin').value = '';
   $('recoverySubmitBtn').disabled = false;
+  candidate = '';
+  setTimeout(typewriterPlaceholder, 200);
   refreshClaimBtn();
   fetchCount();
 }
@@ -623,9 +761,11 @@ function animateModal(el) {
 }
 
 /* ---------------- task description modal ---------------- */
+let _taskTrigger = null;
 function openTask(taskId) {
   const t = data.tasks.find((x) => x.id === taskId);
   if (!t) return;
+  _taskTrigger = document.activeElement;
   $('dtLabel').textContent = t.label;
   $('dtBody').innerHTML = t.description
     ? linkify(t.description)
@@ -638,6 +778,7 @@ function openTask(taskId) {
 function closeModal() {
   $('modal').hidden = true;
   document.documentElement.style.overflow = '';
+  if (_taskTrigger) { _taskTrigger.focus(); _taskTrigger = null; }
 }
 $('dtClose').onclick = closeModal;
 $('modal').onclick = (e) => {
@@ -654,7 +795,9 @@ document.addEventListener('keydown', (e) => {
 
 /* ---------------- confirm modal (generic) ---------------- */
 let confirmCb = null;
+let _confirmTrigger = null;
 function openConfirm(opts) {
+  _confirmTrigger = document.activeElement;
   $('confirmEyebrow').textContent = opts.eyebrow || 'Confirm';
   $('confirmTitle').textContent = opts.title || 'Are you sure?';
   $('confirmMsg').textContent = opts.message || '';
@@ -669,6 +812,7 @@ function closeConfirm() {
   $('confirmModal').hidden = true;
   confirmCb = null;
   document.documentElement.style.overflow = '';
+  if (_confirmTrigger) { _confirmTrigger.focus(); _confirmTrigger = null; }
 }
 $('confirmCancel').onclick = closeConfirm;
 $('confirmModal').onclick = (e) => {
@@ -729,7 +873,7 @@ $('downloadKeyBtn').onclick = () => {
   const codename = session ? session.codename : 'unknown';
   const blob = new Blob(
     [
-      `The Forge — Recovery Key\nCodename: ${codename}\nKey: ${key}\n\nKeep this somewhere safe. It cannot be retrieved from The Forge.`,
+      `The Forge — Recovery Key\nUsername: ${codename}\nKey: ${key}\n\nKeep this somewhere safe. It cannot be retrieved from The Forge.`,
     ],
     { type: 'text/plain' }
   );
@@ -755,6 +899,7 @@ function jumpToNextStep(opts) {
   const stickyCol = youRow.querySelector('.who');
   const stickyWidth = stickyCol ? stickyCol.offsetWidth : 0;
   $('gridWrap').scrollTo({ left: Math.max(0, td.offsetLeft - stickyWidth - 8), behavior: opts.silent ? 'instant' : 'smooth' });
+  if (!opts.silent) btn.focus();
 }
 $('nextStepBtn').onclick = () => jumpToNextStep();
 
@@ -847,7 +992,7 @@ function renderAdminPanel() {
         <div class="ap-search-wrap">
           <input type="text" id="apSearch" placeholder="Search by label or section…" autocomplete="off" />
         </div>
-        <div class="ap-bulk-bar" id="apBulkBar" style="display:none">
+        <div class="ap-bulk-bar" id="apBulkBar">
           <span id="apBulkCount">0 selected</span>
           <button class="btn sm danger" id="apBulkDeleteBtn">Delete selected</button>
         </div>
@@ -859,7 +1004,7 @@ function renderAdminPanel() {
             </tr></thead>
             <tbody>${taskRows}</tbody>
           </table>
-        </div>` : `<p class="hint" style="margin-bottom:12px">No tasks yet — add one below.</p>`}
+        </div>` : `<p class="hint hint--mb">No tasks yet — add one below.</p>`}
 
       <div class="ap-form" id="apForm">
         <h4 class="ap-form-heading" id="apFormHeading">Add task</h4>
@@ -878,7 +1023,7 @@ function renderAdminPanel() {
         </div>
         <div class="ap-form-actions">
           <button class="btn primary" id="apSubmitBtn">Add task</button>
-          <button class="btn" id="apCancelEdit" style="display:none">Cancel</button>
+          <button class="btn" id="apCancelEdit">Cancel</button>
           <button class="btn" id="apPreviewBtn" type="button">Preview</button>
         </div>
         <p class="msg" id="apMsg"></p>
@@ -1002,7 +1147,7 @@ function startEditTask(taskId) {
   editingTaskId = taskId;
   $('apFormHeading').textContent = 'Edit task';
   $('apSubmitBtn').textContent = 'Save changes';
-  $('apCancelEdit').style.display = '';
+  $('apCancelEdit').style.display = 'inline-block';
   $('apLabel').value = t.label;
   $('apDesc').value = t.description || '';
   $('apSection').value = t.section || '';
@@ -1128,7 +1273,7 @@ function renderBoard() {
   const head = `
     <thead>
       <tr>
-        <th class="corner"><div class="corner-label">codename ╲ reading</div></th>
+        <th class="corner"><div class="corner-label">username ╲ reading</div></th>
         ${cols
           .map((t) => {
             const col = sectionColor(t.section);
@@ -1201,7 +1346,7 @@ function renderBoard() {
     // still show admin row; add a gentle nudge under the grid
     setMsg(
       $('gridMsg'),
-      "No one's joined yet — cast a codename to take the first row.",
+      "No one's joined yet — cast a username to take the first row.",
       'ok'
     );
   }
