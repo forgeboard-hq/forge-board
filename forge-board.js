@@ -742,10 +742,7 @@ async function toggleCell(taskId) {
     showToast(next ? 'Marked done ✓' : 'Marked not done', 'ok');
   } else {
     setLocalDone(session.codename, taskId, !next); // revert
-    showToast(res.error || "Couldn't save — try again", 'err', {
-      duration: 3200,
-    });
-    if (/wrong codename or pin/i.test(res.error || '')) $('signOutBtn').click();
+    showToast(res.error || "Couldn't save — try again", 'err', { duration: 3200 });
   }
   patchCell(taskId);
 }
@@ -933,10 +930,7 @@ async function doReset() {
     renderBoard();
     showToast('Progress cleared', 'ok');
   } else {
-    showToast(res.error || "Couldn't clear — try again", 'err', {
-      duration: 3200,
-    });
-    if (/wrong codename or pin/i.test(res.error || '')) $('signOutBtn').click();
+    showToast(res.error || "Couldn't clear — try again", 'err', { duration: 3200 });
   }
 }
 
