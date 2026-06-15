@@ -934,6 +934,7 @@ async function doReset() {
       (b) => norm(b.codename) !== norm(session.codename)
     );
     renderBoard();
+    $('gridWrap').scrollLeft = 0;
     showToast('Progress cleared', 'ok');
   } else {
     showToast(res.error || "Couldn't clear — try again", 'err', { duration: 3200 });
