@@ -740,6 +740,12 @@ async function toggleCell(taskId) {
   dismissToast(saving);
   if (res.ok) {
     showToast(next ? 'Marked done ✓' : 'Marked not done', 'ok');
+    if (next) {
+      const n = data.tasks.reduce((s, t) => s + (isDone(session.codename, t.id) ? 1 : 0), 0);
+      if (n % 10 === 0 && typeof confetti === 'function') {
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+      }
+    }
   } else {
     setLocalDone(session.codename, taskId, !next); // revert
     showToast(res.error || "Couldn't save — try again", 'err', { duration: 3200 });
@@ -877,7 +883,7 @@ $('downloadKeyBtn').onclick = () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'forge-secret.txt';
+  a.download = 'Knowing-God-Recovery-Key.txt';
   a.click();
   URL.revokeObjectURL(url);
 };
@@ -1367,7 +1373,8 @@ function updateProgress() {
     ? data.tasks.reduce((s, t) => s + (t.adminDone ? 1 : 0), 0)
     : data.tasks.reduce((s, t) => s + (isDone(session.codename, t.id) ? 1 : 0), 0);
   const pct = k ? Math.round((n / k) * 100) : 0;
-  $('progFill').style.width = pct + '%';
+  const fillPct = k && n > 0 ? Math.round(Math.pow(n / k, 0.6) * 100) : 0;
+  $('progFill').style.width = fillPct + '%';
   $('progText').textContent = `${n} of ${k} steps`;
   let note = '';
   if (k === 0) note = '';
