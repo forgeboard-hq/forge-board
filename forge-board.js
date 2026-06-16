@@ -8,25 +8,89 @@ const ADMIN_NAME = 'The Keeper';
 
 const INFO_ICON = `<svg class="info-svg" viewBox="0 0 416.979 416.979" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"/></svg>`;
 
-/* ---------------- wordlists for the dice ---------------- */
-const ADJ = [
-  'holy', 'just', 'true', 'pure', 'kind', 'meek', 'wise', 'bold',
-  'good', 'glad', 'calm', 'free', 'sure', 'firm', 'brave', 'clean',
-  'noble', 'royal', 'eager', 'ready', 'loved', 'saved', 'risen', 'humble',
-  'gentle', 'joyful', 'loving', 'living', 'rising', 'golden', 'rooted', 'sealed',
-  'guided', 'tender', 'quiet', 'mended', 'called', 'chosen', 'steady', 'graced',
-  'bright', 'devout', 'mighty', 'loyal', 'lowly', 'merry', 'ardent',
+/* ---------------- username list for the dice ---------------- */
+const USERNAMES = [
+  'broken vessel', 'glad pilgrim', 'quiet heart', 'burning coal', 'tender shoot',
+  'living stone', 'faithful remnant', 'lowly servant', 'still waters', 'hidden manna',
+  'gentle flame', 'rooted oak', 'morning star', 'sealed ember', 'humble seeker',
+  'bright anchor', 'chosen reed', 'willing lamb', 'steady rock', 'graced wanderer',
+  'free sparrow', 'mended branch', 'called exile', 'rising dawn', 'golden harvest',
+  'devout pilgrim', 'tender vine', 'joyful cedar', 'guided stream', 'noble soldier',
+  'pure fountain', 'loyal shepherd', 'brave herald', 'mighty fortress', 'ardent flame',
+  'clean vessel', 'sure foundation', 'royal priesthood', 'risen heir', 'loving kindness',
+  'meek inheritor', 'bold witness', 'holy remnant', 'just servant', 'true shepherd',
+  'wise builder', 'good steward', 'calm waters', 'free captive', 'saved sinner',
+  'eager laborer', 'ready bride', 'sealed saint', 'rooted tree', 'golden lamp',
+  'gentle spirit', 'joyful noise', 'living water', 'rising tide', 'dawn seeker',
+  'hidden pearl', 'morning dew', 'still flame', 'bright torch', 'humble clay',
+  'faithful vine', 'tender mercy', 'steady anchor', 'graced pilgrim', 'chosen vessel',
+  'burning reed', 'mended heart', 'called pilgrim', 'glad servant', 'quiet spring',
+  'noble vine', 'loyal stone', 'brave remnant', 'guided lamb', 'holy seeker',
+  'just pilgrim', 'true remnant', 'wise servant', 'good shepherd', 'calm seeker',
+  'free remnant', 'sure pilgrim', 'royal heir', 'risen pilgrim', 'loving servant',
+  'meek pilgrim', 'bold remnant', 'holy pilgrim', 'just remnant', 'true pilgrim',
+  'broken alabaster', 'glad exile', 'quiet refuge', 'burning altar', 'tender mercy',
+  'living bread', 'faithful sojourner', 'lowly heart', 'still haven', 'hidden spring',
+  'gentle rain', 'rooted cedar', 'morning light', 'sealed remnant', 'humble clay',
+  'bright flame', 'chosen branch', 'willing heart', 'steady vine', 'graced exile',
+  'free captive', 'mended spirit', 'called sojourner', 'rising star', 'golden vessel',
+  'devout sojourner', 'tender heart', 'joyful spring', 'guided exile', 'noble remnant',
+  'pure heart', 'loyal remnant', 'brave sojourner', 'mighty shield', 'ardent seeker',
+  'clean heart', 'sure remnant', 'royal servant', 'risen saint', 'loving heart',
+  'meek servant', 'bold sojourner', 'holy heart', 'just sojourner', 'true heart',
+  'wise heart', 'good heart', 'calm heart', 'free heart', 'saved heart',
+  'eager heart', 'ready heart', 'sealed heart', 'rooted heart', 'golden heart',
+  'gentle heart', 'joyful heart', 'living heart', 'rising heart', 'dawn heart',
+  'hidden heart', 'morning heart', 'still heart', 'bright heart', 'humble heart',
+  'faithful heart', 'tender branch', 'steady heart', 'graced heart', 'chosen heart',
+  'burning heart', 'mended exile', 'called heart', 'glad heart', 'quiet heart',
+  'noble heart', 'loyal heart', 'brave heart', 'guided heart', 'holy sojourner',
+  'broken spirit', 'glad spirit', 'quiet spirit', 'burning spirit', 'tender spirit',
+  'living spirit', 'faithful spirit', 'lowly spirit', 'still spirit', 'hidden spirit',
+  'gentle seeker', 'rooted spirit', 'morning spirit', 'sealed spirit', 'humble spirit',
+  'bright spirit', 'chosen spirit', 'willing spirit', 'steady spirit', 'graced spirit',
+  'free spirit', 'mended pilgrim', 'called spirit', 'rising spirit', 'golden spirit',
+  'devout spirit', 'tender exile', 'joyful spirit', 'guided spirit', 'noble spirit',
+  'pure spirit', 'loyal spirit', 'brave spirit', 'mighty spirit', 'ardent spirit',
+  'clean spirit', 'sure spirit', 'royal spirit', 'risen spirit', 'loving spirit',
+  'meek spirit', 'bold spirit', 'holy spirit', 'just spirit', 'true spirit',
+  'wise pilgrim', 'good pilgrim', 'calm pilgrim', 'free pilgrim', 'saved pilgrim',
+  'eager pilgrim', 'ready pilgrim', 'sealed pilgrim', 'rooted pilgrim', 'golden pilgrim',
+  'gentle pilgrim', 'joyful pilgrim', 'living pilgrim', 'rising pilgrim', 'dawn pilgrim',
+  'hidden pilgrim', 'morning pilgrim', 'still pilgrim', 'bright pilgrim', 'humble pilgrim',
+  'faithful pilgrim', 'tender pilgrim', 'steady pilgrim', 'graced vessel', 'chosen pilgrim',
+  'burning pilgrim', 'mended vessel', 'called vessel', 'glad vessel', 'quiet vessel',
+  'noble vessel', 'loyal vessel', 'brave vessel', 'guided vessel', 'holy vessel',
+  'just vessel', 'true vessel', 'wise vessel', 'good vessel', 'calm vessel',
+  'free vessel', 'saved vessel', 'eager vessel', 'ready vessel', 'sealed vessel',
+  'rooted vessel', 'golden vessel', 'gentle vessel', 'joyful vessel', 'living vessel',
+  'rising vessel', 'dawn vessel', 'hidden vessel', 'morning vessel', 'still vessel',
+  'bright vessel', 'humble vessel', 'faithful vessel', 'tender vessel', 'steady vessel',
+  'chosen exile', 'burning exile', 'glad exile', 'quiet exile', 'noble exile',
+  'loyal exile', 'brave exile', 'guided exile', 'holy exile', 'just exile',
+  'true exile', 'wise exile', 'good exile', 'calm exile', 'free exile',
+  'saved exile', 'eager exile', 'ready exile', 'sealed exile', 'rooted exile',
+  'golden exile', 'gentle exile', 'joyful exile', 'living exile', 'rising exile',
+  'dawn exile', 'hidden exile', 'morning exile', 'still exile', 'bright exile',
+  'humble exile', 'faithful exile', 'tender sojourner', 'steady exile', 'graced sojourner',
+  'burning sojourner', 'glad sojourner', 'quiet sojourner', 'noble sojourner', 'loyal sojourner',
+  'brave sojourner', 'guided sojourner', 'holy sojourner', 'true sojourner', 'wise sojourner',
+  'good sojourner', 'calm sojourner', 'free sojourner', 'saved sojourner', 'eager sojourner',
+  'ready sojourner', 'sealed sojourner', 'rooted sojourner', 'golden sojourner',
+  'gentle sojourner', 'joyful sojourner', 'living sojourner', 'rising sojourner',
+  'dawn sojourner', 'hidden sojourner', 'morning sojourner', 'still sojourner',
+  'bright sojourner', 'humble sojourner', 'faithful sojourner', 'steady sojourner',
+  'broken wanderer', 'glad wanderer', 'quiet wanderer', 'burning wanderer', 'tender wanderer',
+  'living wanderer', 'faithful wanderer', 'lowly wanderer', 'still wanderer', 'hidden wanderer',
+  'gentle wanderer', 'rooted wanderer', 'morning wanderer', 'sealed wanderer', 'humble wanderer',
+  'bright wanderer', 'chosen wanderer', 'willing wanderer', 'steady wanderer', 'free wanderer',
+  'mended wanderer', 'called wanderer', 'rising wanderer', 'golden wanderer', 'devout wanderer',
+  'joyful wanderer', 'guided wanderer', 'noble wanderer', 'pure wanderer', 'loyal wanderer',
+  'brave wanderer', 'mighty wanderer', 'ardent wanderer', 'clean wanderer', 'sure wanderer',
+  'royal wanderer', 'risen wanderer', 'loving wanderer', 'meek wanderer', 'bold wanderer',
+  'holy wanderer', 'just wanderer', 'true wanderer', 'wise wanderer', 'good wanderer',
+  'calm wanderer', 'saved wanderer', 'eager wanderer', 'ready wanderer', 'sealed wanderer',
 ];
-const NOUN = [
-  'lamb', 'dove', 'lion', 'vine', 'olive', 'cedar', 'lily', 'eagle',
-  'ram', 'stag', 'palm', 'reed', 'well', 'lamp', 'seed', 'ark',
-  'altar', 'scroll', 'ember', 'vessel', 'branch', 'fig', 'wheat', 'anchor',
-  'raven', 'dawn', 'fold', 'stream', 'mantle', 'candle', 'rock', 'river',
-  'garden', 'spring', 'brook', 'oak', 'honey', 'bread', 'oil', 'wine',
-  'salt', 'light', 'flame', 'torch', 'star', 'sun', 'moon', 'cloud',
-  'rain', 'dew', 'wind', 'fire', 'stone', 'pearl', 'crown', 'robe',
-  'staff', 'shield', 'sword', 'harp', 'temple', 'gate', 'tower', 'wall',
-  'throne', 'refuge', 'haven', 'manna', ] ;
 
 /* ---------------- state (memory only, by design) ---------------- */
 let session = null; // { codename, pin }
@@ -139,6 +203,13 @@ function showSignedIn(on) {
   $('gateScreen').style.display = on ? 'none' : 'block';
   $('boardSection').style.display = on ? 'block' : 'none';
 }
+async function fetchCodenames() {
+  const res = await apiGet({ action: 'codenames' });
+  if (res && res.ok && Array.isArray(res.codenames)) {
+    data.codenames = res.codenames;
+  }
+}
+
 async function fetchBoard() {
   try {
     const res = await apiGet();
@@ -229,14 +300,9 @@ function rollCodename() {
   clearTypewriter();
   $('codenameDisplay').innerHTML = '';
   const taken = new Set(data.codenames.map(norm));
-  let name = '';
-  for (let i = 0; i < 80; i++) {
-    name =
-      ADJ[Math.floor(Math.random() * ADJ.length)] +
-      ' ' +
-      NOUN[Math.floor(Math.random() * NOUN.length)];
-    if (!taken.has(norm(name))) break;
-  }
+  const available = USERNAMES.filter(n => !taken.has(norm(n)));
+  const pool = available.length ? available : USERNAMES;
+  const name = pool[Math.floor(Math.random() * pool.length)];
   candidate = name;
   shuffleInto($('codenameDisplay'), name);
   $('codenameDisplay').classList.remove('empty');
@@ -295,10 +361,11 @@ function typewriterPlaceholder() {
 
   const phrase = 'draw your username';
 
+  const taken = new Set(data.codenames.map(norm));
+  const available = USERNAMES.filter(n => !taken.has(norm(n)));
+  const twPool = available.length >= 5 ? available : USERNAMES;
   const namePool = Array.from({ length: 5 }, () =>
-    ADJ[Math.floor(Math.random() * ADJ.length)] +
-    ' ' +
-    NOUN[Math.floor(Math.random() * NOUN.length)]
+    twPool[Math.floor(Math.random() * twPool.length)]
   );
   let nameIndex = 0;
   function nextName() {
@@ -1422,6 +1489,7 @@ function init() {
     $('claimView').style.display = 'block';
     showSignedIn(false);
     fetchCount();
+    fetchCodenames();
   }
 }
 
